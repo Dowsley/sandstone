@@ -19,8 +19,8 @@ int main() {
         UpdateTexture(canvas, pixels);
 
         BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawTexture(canvas, 0, 0, BLACK);
+        ClearBackground(BLACK);
+        DrawTexture(canvas, 0, 0, WHITE);
         EndDrawing();
     }
 
