@@ -49,13 +49,43 @@ void draw_frame(const Texture2D &canvas, const Color *pixels)
     EndDrawing();
 }
 
+CellType get_next_type(CellType type)
+{
+    constexpr int FIRST = static_cast<int>(CellType::EMPTY);
+    constexpr int LAST = static_cast<int>(CellType::WATER);
+    int next = static_cast<int>(type) + 1;
+    if (next > LAST) next = FIRST;
+    return static_cast<CellType>(next);
+}
+
+void handle_input(Simulation &sim, CellType &current_type, bool &cycle_key_prev)
+{
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        auto [x, y] = GetMousePosition();
+        x = static_cast<int>(x / RES_SCALE);
+        y = static_cast<int>(y / RES_SCALE);
+        if (x >= 0 && x < VIRTUAL_WIDTH && y >= 0 && y < VIRTUAL_HEIGHT) {
+            sim.set_type_at(x, y, current_type);
+        }
+    }
+    
+    const bool cycle_key = IsKeyDown(KEY_SPACE);
+    if (cycle_key && !cycle_key_prev) {
+        current_type = get_next_type(current_type);
+    }
+    cycle_key_prev = cycle_key;
+}
+
 int main()
 {
     auto sim = Simulation(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
     const auto [canvas, pixels] = initialize_graphics(
         VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
         WINDOW_WIDTH, WINDOW_HEIGHT);
+    auto current_type = CellType::SAND;
+    bool cycle_key_prev = false;
     while (!WindowShouldClose()) {
+        handle_input(sim, current_type, cycle_key_prev);
         sim.step();
         sim.fill_render_buffer(pixels);
         draw_frame(canvas, pixels);

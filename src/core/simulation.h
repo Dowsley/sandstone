@@ -17,9 +17,8 @@ enum class CellType : uint8_t {
     WATER,
     OIL,
     FIRE,
-    COUNT,
+    COUNT
 };
-
 
 class Simulation {
 public:
@@ -27,8 +26,14 @@ public:
     explicit Simulation(const Point &size);
     ~Simulation() = default;
 
+    const Point UP = Point(0, -1);
+    const Point DOWN = Point(0, 1);
+    const Point RIGHT = Point(1, 0);
+    const Point LEFT = Point(-1, 0);
+
     void step();
-    
+
+    void set_type_at(int x, int y, CellType type);
     CellType get_type_at(int x, int y) const;
     void fill_render_buffer(Color *dst) const;
 
@@ -41,6 +46,9 @@ private:
 
     std::vector<CellType> _cells;
     std::array<Color, static_cast<size_t>(CellType::COUNT)> _palette;
+
+    int flatten_coords(int x, int y) const;
+    int flatten_coords(const Point &pos) const;
 };
 
 #endif //SIMULATION_H
