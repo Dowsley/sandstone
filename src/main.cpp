@@ -58,17 +58,15 @@ CellType get_next_type(CellType type)
     return static_cast<CellType>(next);
 }
 
-/*
- * Helper function to draw a line of particles using Bresenham's algorithm.
-* This ensures that fast mouse movements create a solid line.
-*/
+// Helper function to draw a line of particles using Bresenham's algorithm.
+// This ensures that fast mouse movements create a solid line.
 void draw_particle_line(
-    Simulation &sim, const Vector2 start, const Vector2 end, const CellType type)
+    Simulation &sim, const Point start, const Point end, const CellType type)
 {
-    int x0 = static_cast<int>(start.x);
-    int y0 = static_cast<int>(start.y);
-    const int x1 = static_cast<int>(end.x);
-    const int y1 = static_cast<int>(end.y);
+    int x0 = start.x;
+    int y0 = start.y;
+    const int x1 = end.x;
+    const int y1 = end.y;
 
     const int dx = abs(x1 - x0);
     const int sx = x0 < x1 ? 1 : -1;
@@ -77,7 +75,6 @@ void draw_particle_line(
     int err = dx + dy;
 
     while (true) {
-        // Place a particle at the current point on the line
         if (x0 >= 0 && x0 < VIRTUAL_WIDTH && y0 >= 0 && y0 < VIRTUAL_HEIGHT) {
             if (sim.get_type_at(x0, y0) == CellType::EMPTY) {
                 sim.set_type_at(x0, y0, type);
@@ -108,17 +105,15 @@ void handle_input(Simulation &sim, CellType &current_type, bool &cycle_key_prev,
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
         // If prev_mouse_pos has been reset, it means this is the first frame of a new click.
-        // We draw a line from the current position to itself (a single point).
-        // Otherwise, we draw from the last frame's position to the current one.
-        const Vector2 start_pos = (prev_mouse_pos.x == -1.0f) ? current_mouse_pos : prev_mouse_pos;
-        draw_particle_line(sim, start_pos, current_mouse_pos, current_type);
-
-        // Update the previous position for the next frame.
+        // Draw a line from the current position to itself (a single point).
+        // Otherwise, draw from the last frame's position to the current one.
+        const Point start_pos = prev_mouse_pos.x == -1.0f
+            ? Point(current_mouse_pos)
+            : Point(prev_mouse_pos);
+        draw_particle_line(sim, start_pos, Point(current_mouse_pos), current_type);
         prev_mouse_pos = current_mouse_pos;
     }
     else {
-        // If the mouse button is not pressed, reset the previous position.
-        // This ensures the next click doesn't connect to the last release point.
         prev_mouse_pos = {-1.0f, -1.0f};
     }
     
