@@ -6,7 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(lib/raylib)
 
-add_executable(sandstone src/main.cpp)
+add_executable(sandstone src/main.cpp
+        src/core/simulation.cpp
+        src/core/simulation.h
+        src/types/Point.cpp
+        src/types/Point.h)
 target_link_libraries(sandstone PRIVATE raylib)
 
 if(UNIX AND NOT APPLE)

@@ -1,42 +1,49 @@
 #include "raylib.h"
 
-#include <cstdio>
 #include <cstring>
+
+#include "core/simulation.h"
 
 constexpr int VIRTUAL_WIDTH  = 200;
 constexpr int VIRTUAL_HEIGHT = 150;
-
 constexpr int RES_SCALE = 5;
 constexpr int WINDOW_WIDTH  = VIRTUAL_WIDTH * RES_SCALE;
 constexpr int WINDOW_HEIGHT = VIRTUAL_HEIGHT * RES_SCALE;
 
-int main()
+struct Graphics {
+    Texture2D canvas;
+    Color *pixels;
+};
+
+Graphics InitializeGraphics(const int virtualWidth, const int virtualHeight,
+    const int windowWidth, const int windowHeight)
 {
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Sandstone Simulation");
+    InitWindow(windowWidth, windowHeight, "Sandstone Simulation");
     SetTargetFPS(60);
 
-    const Image initImage = GenImageColor(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, BLACK);
+    const Image initImage = GenImageColor(virtualWidth, virtualHeight, BLACK);
     const Texture2D canvas = LoadTextureFromImage(initImage);
     UnloadImage(initImage);
     SetTextureFilter(canvas, TEXTURE_FILTER_POINT);
 
-    const auto pixels = static_cast<Color*>(
-        MemAlloc(VIRTUAL_WIDTH * VIRTUAL_HEIGHT * sizeof(Color)));
+    const auto pixels = static_cast<Color*>(MemAlloc(virtualWidth * virtualHeight * sizeof(Color)));
+    memset(pixels, 0, virtualWidth * virtualHeight * sizeof(Color));
 
-    memset(pixels, 0, VIRTUAL_WIDTH * VIRTUAL_HEIGHT * sizeof(Color));
-    for (int y = 0; y < VIRTUAL_HEIGHT; ++y) {
-        for (int x = 0; x < VIRTUAL_WIDTH; ++x) {
-            const int idx = y * VIRTUAL_WIDTH + x;
-            pixels[idx].r = static_cast<unsigned char>(GetRandomValue(0, 255));
-            pixels[idx].g = static_cast<unsigned char>(GetRandomValue(0, 255));
-            pixels[idx].b = static_cast<unsigned char>(GetRandomValue(0, 255));
-            pixels[idx].a = 255;
-        }
-    }
+    return { canvas, pixels };
+}
 
+int main()
+{
+    auto sim = Simulation(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+
+    const auto [canvas, pixels] = InitializeGraphics(
+        VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
+        WINDOW_WIDTH, WINDOW_HEIGHT);
     while (!WindowShouldClose()) {
-        UpdateTexture(canvas, pixels);
+        sim.Step();
+        sim.FillRenderBuffer(pixels);
 
+        UpdateTexture(canvas, pixels);
         BeginDrawing();
         ClearBackground(BLACK);
         DrawTexturePro(
