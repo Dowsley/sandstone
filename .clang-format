@@ -1,0 +1,13 @@
+PointerAlignment: Right
+#ReferenceAlignment: Right
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction:         true
+  AfterClass:            true
+  AfterControlStatement: false
+  BeforeElse:            true
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never

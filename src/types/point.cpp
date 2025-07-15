@@ -5,23 +5,23 @@
 #include "point.h"
 
 Point Point::operator+(const Point &other) const {
-    return {X + other.X, Y + other.Y};
+    return {x + other.x, y + other.y};
 }
 
 Point Point::operator-(const Point &other) const {
-    return {X - other.X, Y - other.Y};
+    return {x - other.x, y - other.y};
 }
 
 Point Point::operator*(const int scalar) const {
-    return {X * scalar, Y * scalar};
+    return {x * scalar, y * scalar};
 }
 
 Point Point::operator/(const int scalar) const {
-    return {X / scalar, Y / scalar};
+    return {x / scalar, y / scalar};
 }
 
 bool Point::operator==(const Point &other) const {
-    return X == other.X && Y == other.Y;
+    return x == other.x && y == other.y;
 }
 
 bool Point::operator!=(const Point &other) const {

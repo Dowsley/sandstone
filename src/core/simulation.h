@@ -4,7 +4,7 @@
 
 #ifndef SIMULATION_H
 #define SIMULATION_H
-#include <cstdint>
+
 #include <raylib.h>
 #include <vector>
 
@@ -27,13 +27,13 @@ public:
     explicit Simulation(const Point &size);
     ~Simulation() = default;
 
-    void Step();
+    void step();
     
-    CellType GetTypeAt(const int x, const int y) const;
-    void FillRenderBuffer(Color *dst) const;
+    CellType get_type_at(int x, int y) const;
+    void fill_render_buffer(Color *dst) const;
 
-    int GetWidth() const;
-    int GetHeight() const;
+    int get_width() const;
+    int get_height() const;
 
 private:
     int _width;

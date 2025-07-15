@@ -18,19 +18,19 @@ Simulation::Simulation(const int width, const int height)
     _cells.resize(width * height, CellType::EMPTY);
 }
 
-Simulation::Simulation(const Point &size) : Simulation(size.X, size.Y) { }
+Simulation::Simulation(const Point &size) : Simulation(size.x, size.y) { }
 
-void Simulation::Step()
+void Simulation::step()
 {
     // TODO: implement simulation logic here
 }
 
-CellType Simulation::GetTypeAt(const int x, const int y) const
+CellType Simulation::get_type_at(const int x, const int y) const
 {
     return _cells[y * _width + x];
 }
 
-void Simulation::FillRenderBuffer(Color *dst) const
+void Simulation::fill_render_buffer(Color *dst) const
 {
     const int total = _width * _height;
     for (int i = 0; i < total; ++i) {
@@ -39,6 +39,6 @@ void Simulation::FillRenderBuffer(Color *dst) const
 }
 
 
-int Simulation::GetWidth() const { return _width; }
-int Simulation::GetHeight() const { return _height; }
+int Simulation::get_width() const { return _width; }
+int Simulation::get_height() const { return _height; }
 

@@ -7,11 +7,11 @@
 
 struct Point
 {
-    int X;
-    int Y;
+    int x;
+    int y;
 
-    Point() : X(0), Y(0) {}
-    Point(const int x, const int y) : X(x), Y(y) {}
+    Point() : x(0), y(0) {}
+    Point(const int x, const int y) : x(x), y(y) {}
 
     Point operator+(const Point& other) const;
     Point operator-(const Point& other) const;
