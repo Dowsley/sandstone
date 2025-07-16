@@ -9,8 +9,16 @@ add_subdirectory(lib/raylib)
 add_executable(sandstone src/main.cpp
         src/core/simulation.cpp
         src/core/simulation.h
-        src/types/Point.cpp
-        src/types/Point.h)
+        src/structures/Point.cpp
+        src/structures/Point.h
+        src/elements/element_type.cpp
+        src/elements/element_type.h
+        src/core/abstract/base_loader.h
+        src/core/abstract/base_registry.h
+        src/elements/element_registry.cpp
+        src/elements/element_registry.h
+        src/elements/element_loader.cpp
+        src/elements/element_loader.h)
 target_link_libraries(sandstone PRIVATE raylib)
 
 if(UNIX AND NOT APPLE)

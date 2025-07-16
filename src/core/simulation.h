@@ -8,22 +8,18 @@
 #include <raylib.h>
 #include <vector>
 
-#include "../types/point.h"
+#include "../structures/point.h"
+#include "../elements/element_registry.h"
 
-enum class CellType : uint8_t {
-    EMPTY = 0,
-    SAND,
-    STONE,
-    WATER,
-    OIL,
-    FIRE,
-    COUNT
+struct CellData {
+    const ElementType* type; // we can change it to point elsewhere… but not change the instance itself
+    uint8_t colorVariantIndex = 0;
 };
 
 class Simulation {
 public:
-    Simulation(int width, int height);
-    explicit Simulation(const Point &size);
+    Simulation(int width, int height, const ElementRegistry &elementRegistry);
+    explicit Simulation(const Point &size, const ElementRegistry &elementRegistry);
     ~Simulation() = default;
 
     const Point UP = Point(0, -1);
@@ -33,22 +29,27 @@ public:
 
     void step();
 
-    void set_type_at(int x, int y, CellType type);
-    CellType get_type_at(int x, int y) const;
+    void set_type_at(int x, int y, const ElementType *type, int colorIdx = -1);
+    void set_type_at(int x, int y, const std::string &id, int colorIdx = -1);
+    const ElementType* get_type_at(int x, int y) const;
     void fill_render_buffer(Color *dst) const;
 
     int get_width() const;
     int get_height() const;
 
+    int flatten_coords(int x, int y) const;
+    int flatten_coords(const Point &pos) const;
+
+    ElementType* get_type_by_id(const std::string &id) const;
+    std::vector<const ElementType*> get_all_element_types() const;
+
 private:
+    ElementRegistry _elementRegistry;
+    
     int _width;
     int _height;
 
-    std::vector<CellType> _cells;
-    std::array<Color, static_cast<size_t>(CellType::COUNT)> _palette;
-
-    int flatten_coords(int x, int y) const;
-    int flatten_coords(const Point &pos) const;
+    std::vector<CellData> _cells;
 };
 
 #endif //SIMULATION_H

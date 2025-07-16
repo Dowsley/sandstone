@@ -1,6 +1,8 @@
 #include "raylib.h"
 
 #include <cstring>
+#include <vector>
+#include <string>
 
 #include "core/simulation.h"
 
@@ -49,19 +51,10 @@ void draw_frame(const Texture2D &canvas, const Color *pixels)
     EndDrawing();
 }
 
-CellType get_next_type(CellType type)
-{
-    constexpr int FIRST = static_cast<int>(CellType::SAND);
-    constexpr int LAST = static_cast<int>(CellType::WATER);
-    int next = static_cast<int>(type) + 1;
-    if (next > LAST) next = FIRST;
-    return static_cast<CellType>(next);
-}
-
 // Helper function to draw a line of particles using Bresenham's algorithm.
 // This ensures that fast mouse movements create a solid line.
 void draw_particle_line(
-    Simulation &sim, const Point start, const Point end, const CellType type)
+    Simulation &sim, const Point start, const Point end, const std::string& type_id)
 {
     int x0 = start.x;
     int y0 = start.y;
@@ -76,8 +69,9 @@ void draw_particle_line(
 
     while (true) {
         if (x0 >= 0 && x0 < VIRTUAL_WIDTH && y0 >= 0 && y0 < VIRTUAL_HEIGHT) {
-            if (sim.get_type_at(x0, y0) == CellType::EMPTY) {
-                sim.set_type_at(x0, y0, type);
+            if (const auto cell_type = sim.get_type_at(x0, y0); cell_type && cell_type->get_id() == "EMPTY") {
+                const auto type = sim.get_type_by_id(type_id);
+                sim.set_type_at(x0, y0, type, type->get_random_color_index());
             }
         }
 
@@ -94,8 +88,13 @@ void draw_particle_line(
     }
 }
 
+size_t get_next_type_index(const size_t current, const size_t total)
+{
+    return (current + 1) % total;
+}
 
-void handle_input(Simulation &sim, CellType &current_type, bool &cycle_key_prev, Vector2 &prev_mouse_pos)
+void handle_input(Simulation &sim, const std::vector<std::string> &type_ids,
+    size_t &current_type_idx, bool &cycle_key_prev, Vector2 &prev_mouse_pos)
 {
     auto [x, y] = GetMousePosition();
     const Vector2 current_mouse_pos = {
@@ -103,14 +102,13 @@ void handle_input(Simulation &sim, CellType &current_type, bool &cycle_key_prev,
         y / RES_SCALE
     };
 
+    const std::string& current_type_id = type_ids[current_type_idx];
+
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-        // If prev_mouse_pos has been reset, it means this is the first frame of a new click.
-        // Draw a line from the current position to itself (a single point).
-        // Otherwise, draw from the last frame's position to the current one.
         const Point start_pos = prev_mouse_pos.x == -1.0f
             ? Point(current_mouse_pos)
             : Point(prev_mouse_pos);
-        draw_particle_line(sim, start_pos, Point(current_mouse_pos), current_type);
+        draw_particle_line(sim, start_pos, Point(current_mouse_pos), current_type_id);
         prev_mouse_pos = current_mouse_pos;
     }
     else {
@@ -119,25 +117,31 @@ void handle_input(Simulation &sim, CellType &current_type, bool &cycle_key_prev,
     
     const bool cycle_key = IsKeyDown(KEY_SPACE);
     if (cycle_key && !cycle_key_prev) {
-        current_type = get_next_type(current_type);
+        current_type_idx = get_next_type_index(current_type_idx, type_ids.size());
     }
     cycle_key_prev = cycle_key;
 }
 
 int main()
 {
-    auto sim = Simulation(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+    const ElementRegistry elementRegistry { "WHATEVER FOR NOW" };
+    Simulation sim(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, elementRegistry);
     const auto [canvas, pixels] = initialize_graphics(
         VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
         WINDOW_WIDTH, WINDOW_HEIGHT);
-    auto current_type = CellType::SAND;
-    bool cycle_key_prev = false;
+
+    std::vector<std::string> type_ids;
+    for (const auto* type : sim.get_all_element_types()) {
+        if (type->get_id() != "EMPTY") {
+            type_ids.push_back(type->get_id());
+        }
+    }
     
-    // Stores the mouse position from the previous frame to draw lines.
-    // Initialized to an invalid position.
+    size_t current_type_idx = 0;
+    bool cycle_key_prev = false;
     Vector2 prev_mouse_pos = {-1.0f, -1.0f};
     while (!WindowShouldClose()) {
-        handle_input(sim, current_type, cycle_key_prev, prev_mouse_pos);
+        handle_input(sim, type_ids, current_type_idx, cycle_key_prev, prev_mouse_pos);
         sim.step();
         sim.fill_render_buffer(pixels);
         draw_frame(canvas, pixels);

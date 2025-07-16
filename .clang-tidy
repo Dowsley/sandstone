@@ -41,6 +41,12 @@ CheckOptions:
     value: lower_case
   - key: readability-identifier-naming.PrivateMemberPrefix
     value: '_'
+    
+  # Protected members
+  - key: readability-identifier-naming.ProtectedMemberCase
+    value: lower_case
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: '_'
 
   # Constexpr variables (constant expressions)
   - key: readability-identifier-naming.ConstexprVariableCase
