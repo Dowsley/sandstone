@@ -4,20 +4,25 @@
 
 #include "element_registry.h"
 
+#include "empty.h"
+#include "types/movable_solid.h"
+#include "types/immovable_solid.h"
+#include "types/liquid.h"
+
 std::vector<ElementType*> ElementRegistry::_load_specific() {
     // return loader.LoadAll(); // TODO: Add data-driven XML stuff
 
     std::vector<ElementType*> elements;
 
-    const auto empty = (new ElementType())
+    const auto empty = (new Empty())
         ->set_id("EMPTY")
         ->set_name("Empty")
         ->set_description("Nothing. Nil.")
         ->set_density(0)
-        ->add_color_variant({ 0, 0, 0, 0 });;
+        ->add_color_variant({ 0, 0, 0, 0 });
     elements.push_back(empty);
 
-    const auto sand = (new ElementType())
+    const auto sand = (new MovableSolid())
         ->set_id("SAND")
         ->set_name("Sand")
         ->set_description("This is the sand element.")
@@ -27,7 +32,7 @@ std::vector<ElementType*> ElementRegistry::_load_specific() {
         ->add_color_variant({ 248, 235, 195, 255 });
     elements.push_back(sand);
 
-    const auto stone = (new ElementType())
+    const auto stone = (new ImmovableSolid())
         ->set_id("STONE")
         ->set_name("Stone")
         ->set_description("This is the stone element.")
@@ -37,7 +42,7 @@ std::vector<ElementType*> ElementRegistry::_load_specific() {
         ->add_color_variant({ 156, 156, 156, 255 });
     elements.push_back(stone);
 
-    const auto water = (new ElementType())
+    const auto water = (new Liquid())
         ->set_id("WATER")
         ->set_name("Water")
         ->set_description("This is the water element.")

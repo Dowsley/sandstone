@@ -12,6 +12,11 @@
 template <typename T, typename L>
 class BaseRegistry {
 public:
+    BaseRegistry(const BaseRegistry&) = delete;
+    BaseRegistry& operator=(const BaseRegistry&) = delete;
+    BaseRegistry(BaseRegistry&&) = delete;
+    BaseRegistry& operator=(BaseRegistry&&) = delete;
+
     explicit BaseRegistry(const std::string &path)
             : loader(path) {
         // Do not call _load() here

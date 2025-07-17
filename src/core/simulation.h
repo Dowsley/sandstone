@@ -10,16 +10,12 @@
 
 #include "../structures/point.h"
 #include "../elements/element_registry.h"
-
-struct CellData {
-    const ElementType* type; // we can change it to point elsewhere… but not change the instance itself
-    uint8_t colorVariantIndex = 0;
-};
+#include "cell_matrix.h"
 
 class Simulation {
 public:
-    Simulation(int width, int height, const ElementRegistry &elementRegistry);
-    explicit Simulation(const Point &size, const ElementRegistry &elementRegistry);
+    Simulation(int width, int height, ElementRegistry& element_registry);
+    explicit Simulation(const Point &size, ElementRegistry& element_registry);
     ~Simulation() = default;
 
     const Point UP = Point(0, -1);
@@ -44,12 +40,13 @@ public:
     std::vector<const ElementType*> get_all_element_types() const;
 
 private:
-    ElementRegistry _elementRegistry;
+    ElementRegistry& _element_registry;
     
     int _width;
     int _height;
 
-    std::vector<CellData> _cells;
+    CellMatrix _cells;
+    CellMatrix _next_cells;
 };
 
 #endif //SIMULATION_H

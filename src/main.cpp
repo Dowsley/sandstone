@@ -124,8 +124,10 @@ void handle_input(Simulation &sim, const std::vector<std::string> &type_ids,
 
 int main()
 {
-    const ElementRegistry elementRegistry { "WHATEVER FOR NOW" };
-    Simulation sim(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, elementRegistry);
+    ElementRegistry element_registry { "WHATEVER FOR NOW" };
+    element_registry.initialize();
+    
+    Simulation sim(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, element_registry);
     const auto [canvas, pixels] = initialize_graphics(
         VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
         WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -141,6 +143,7 @@ int main()
     bool cycle_key_prev = false;
     Vector2 prev_mouse_pos = {-1.0f, -1.0f};
     while (!WindowShouldClose()) {
+        printf("%s\n", type_ids[current_type_idx].c_str());
         handle_input(sim, type_ids, current_type_idx, cycle_key_prev, prev_mouse_pos);
         sim.step();
         sim.fill_render_buffer(pixels);

@@ -3,6 +3,7 @@
 //
 
 #include "element_type.h"
+#include "../core/cell_data.h"
 #include "../core/simulation.h"
 
 const std::string& ElementType::get_id() const { return _id; }
@@ -21,8 +22,3 @@ ElementType* ElementType::set_description(const std::string &description) { this
 ElementType* ElementType::set_name(const std::string &name) { this->_name = name; return this; }
 ElementType* ElementType::set_density(const int density) { this->_density = density; return this; }
 ElementType* ElementType::add_color_variant(const Color &colorVariant) { this->_color_variants.push_back(colorVariant); return this; }
-
-bool ElementType::step_particle_at(Simulation *sim, int x, int y) const
-{
-    return false;
-}

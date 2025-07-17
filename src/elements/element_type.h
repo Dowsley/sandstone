@@ -4,13 +4,14 @@
 
 #ifndef ELEMENT_TYPE_H
 #define ELEMENT_TYPE_H
+
 #include "raylib.h"
-// #include "../core/simulation.h"
-class Simulation;
 
 #include <list>
 #include <string>
+#include <vector>
 
+class CellMatrix;
 
 class ElementType {
 protected:
@@ -18,11 +19,10 @@ protected:
     std::string _name;
     std::string _description;
     int _density = 0;
-    // int _melting_point;
-    // int _boiling_point;
     std::vector<Color> _color_variants;
 
 public:
+    virtual ~ElementType() = default;
     const std::string& get_id() const;
     const std::string& get_name() const;
     const std::string& get_description() const;
@@ -39,8 +39,10 @@ public:
     ElementType* set_density(int density);
     ElementType* add_color_variant(const Color &colorVariant);
 
-    // TODO: Consider encapsulating the eventual multiple systems in the simulation and pass them separately here.
-    virtual bool step_particle_at(Simulation *sim, int x, int y) const;
+    virtual bool step_particle_at(
+       CellMatrix &curr_cells,
+       CellMatrix &next_cells,
+    int x, int y, const ElementType *type) const = 0;
 };
 
 #endif //ELEMENT_TYPE_H

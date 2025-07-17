@@ -18,7 +18,23 @@ add_executable(sandstone src/main.cpp
         src/elements/element_registry.cpp
         src/elements/element_registry.h
         src/elements/element_loader.cpp
-        src/elements/element_loader.h)
+        src/elements/element_loader.h
+        src/elements/types/abstract/solid.cpp
+        src/elements/types/abstract/solid.h
+        src/elements/types/movable_solid.cpp
+        src/elements/types/movable_solid.h
+        src/elements/types/liquid.cpp
+        src/elements/types/liquid.h
+        src/elements/types/immovable_solid.cpp
+        src/elements/types/immovable_solid.h
+        src/elements/types/abstract/solid.cpp
+        src/elements/types/abstract/solid.h
+        src/core/cell_data.cpp
+        src/core/cell_data.h
+        src/core/cell_matrix.cpp
+        src/core/cell_matrix.h
+        src/elements/empty.cpp
+        src/elements/empty.h)
 target_link_libraries(sandstone PRIVATE raylib)
 
 if(UNIX AND NOT APPLE)

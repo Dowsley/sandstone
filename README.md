@@ -7,6 +7,8 @@ Falling sand simulation. Depends on src/raylib (checked at tag 5.5)
 - [ ] Rewrite on better design pattern (ongoing)
   - Hierarchy of elements
   - Flyweight
+  - [X] Solids
+  - [ ] Liquid
 - [ ] Better water behavior
   - Dispersion rate
 - [ ] Brush/sizes
@@ -14,3 +16,4 @@ Falling sand simulation. Depends on src/raylib (checked at tag 5.5)
 - [ ] Element chooser
 - [ ] Particle System
 - [ ] Rigid Body System
+- [ ] Gases
