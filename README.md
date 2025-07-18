@@ -4,16 +4,19 @@ Falling sand simulation. Depends on src/raylib (checked at tag 5.5)
 
 ## TODO
 - [X] Basic sim
-- [ ] Rewrite on better design pattern (ongoing)
-  - Hierarchy of elements
-  - Flyweight
+- [X] Rewrite on better design pattern
+  - [X] Hierarchy of elements
+  - [X] Flyweight
   - [X] Solids
-  - [ ] Liquid
+  - [X] Liquid
+- [ ] Brush/sizes
+  - No more lines!
+- [ ] Density/priority
 - [ ] Better water behavior
   - Dispersion rate
-- [ ] Brush/sizes
-- [ ] Text saying element
-- [ ] Element chooser
+- [ ] Extremely basic UI
+  - [ ] Brush size
+  - [ ] Element chooser
 - [ ] Particle System
 - [ ] Rigid Body System
 - [ ] Gases

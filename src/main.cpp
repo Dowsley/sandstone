@@ -143,7 +143,6 @@ int main()
     bool cycle_key_prev = false;
     Vector2 prev_mouse_pos = {-1.0f, -1.0f};
     while (!WindowShouldClose()) {
-        printf("%s\n", type_ids[current_type_idx].c_str());
         handle_input(sim, type_ids, current_type_idx, cycle_key_prev, prev_mouse_pos);
         sim.step();
         sim.fill_render_buffer(pixels);

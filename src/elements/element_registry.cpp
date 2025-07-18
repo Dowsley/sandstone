@@ -47,9 +47,9 @@ std::vector<ElementType*> ElementRegistry::_load_specific() {
         ->set_name("Water")
         ->set_description("This is the water element.")
         ->set_density(1)
-        ->add_color_variant({ 60,128,242, 255 })
-        ->add_color_variant({ 15,93,226, 255 })
-        ->add_color_variant({ 117, 164, 246, 255 });
+        // ->add_color_variant({ 60,128,242, 255 });
+        ->add_color_variant({ 15,93,226, 255 });
+        // ->add_color_variant({ 117, 164, 246, 255 });
     elements.push_back(water);
     
     return elements;
