@@ -27,9 +27,13 @@ std::vector<ElementType*> ElementRegistry::_load_specific() {
         ->set_name("Sand")
         ->set_description("This is the sand element.")
         ->set_density(10)
-        ->add_color_variant({ 240, 213, 129, 255 })
-        ->add_color_variant({ 232, 191, 63, 255 })
-        ->add_color_variant({ 248, 235, 195, 255 });
+        ->add_color_variant({ 238, 221, 126, 255 })
+        ->add_color_variant({ 222, 205, 111, 255 })
+        ->add_color_variant({ 232, 215, 121, 255 })
+        ->add_color_variant({ 230, 213, 119, 255 })
+        ->add_color_variant({ 221, 204, 110, 255 })
+        ->add_color_variant({ 241, 224, 129, 255 });
+    
     elements.push_back(sand);
 
     const auto stone = (new ImmovableSolid())

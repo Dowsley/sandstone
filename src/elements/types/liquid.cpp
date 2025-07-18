@@ -41,8 +41,8 @@ bool Liquid::step_particle_at(
         const int nx = x + dirs[i];
         const int ny = y + 1;
         if (curr_cells.within_bounds(nx, ny) && curr_cells.within_bounds(nx, y)) {
-            const ElementType* diag_type = next_cells.get_type(nx, ny);
-            const ElementType* side_type = next_cells.get_type(nx, y);
+            const ElementType *diag_type = next_cells.get_type(nx, ny);
+            const ElementType *side_type = next_cells.get_type(nx, y);
             if (diag_type && side_type &&
                 diag_type->get_id() == "EMPTY" &&
                 side_type->get_id() == "EMPTY") {
