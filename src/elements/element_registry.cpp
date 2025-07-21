@@ -33,7 +33,6 @@ std::vector<ElementType*> ElementRegistry::_load_specific() {
         ->add_color_variant({ 230, 213, 119, 255 })
         ->add_color_variant({ 221, 204, 110, 255 })
         ->add_color_variant({ 241, 224, 129, 255 });
-    
     elements.push_back(sand);
 
     const auto stone = (new ImmovableSolid())
