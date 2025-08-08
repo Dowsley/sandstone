@@ -9,8 +9,8 @@ add_subdirectory(lib/raylib)
 add_executable(sandstone src/main.cpp
         src/core/simulation.cpp
         src/core/simulation.h
-        src/structures/Point.cpp
-        src/structures/Point.h
+        src/types/vector2i.cpp
+        src/types/vector2i.h
         src/elements/element_type.cpp
         src/elements/element_type.h
         src/core/abstract/base_loader.h

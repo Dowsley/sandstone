@@ -9,14 +9,22 @@ Falling sand simulation. Depends on src/raylib (checked at tag 5.5)
   - [X] Flyweight
   - [X] Solids
   - [X] Liquid
-- [ ] Brush/sizes
-  - No more lines!
-- [ ] Density/priority
+- [X] Brush/sizes
+- [ ] Main Application Class
+- [ ] Better build system/dependency handler
+- [ ] Input handler
+- [ ] Properties
+  - Density
+  - Priority
+  - Friction (chance of moving solid sliding down)
+- [ ] Data-driven approach
+  - XML loading like in live-world-engine
 - [ ] Better water behavior
   - Dispersion rate
 - [ ] Extremely basic UI
   - [ ] Brush size
   - [ ] Element chooser
+- [ ] Gases
 - [ ] Particle System
 - [ ] Rigid Body System
-- [ ] Gases
+- [ ] Temperatures

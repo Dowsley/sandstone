@@ -11,22 +11,36 @@ Simulation::Simulation(const int width, const int height, ElementRegistry& eleme
     _next_cells = CellMatrix(width, height, _element_registry);
 }
 
-Simulation::Simulation(const Point &size, ElementRegistry& element_registry)
+Simulation::Simulation(const Vector2I &size, ElementRegistry& element_registry)
     : Simulation(size.x, size.y, element_registry) { }
 
 void Simulation::step()
 {
     _next_cells = _cells;
     
+    // Alternate scan direction each frame to reduce processing order bias
+    const bool scan_left_to_right = (_step_count % 2) == 0;
+    
     for (int y = _height - 1; y >= 0; --y) {
-        for (int x = 0; x < _width; ++x) {
-            if (const ElementType *type = _cells.get_type(x, y)) {
-                type->step_particle_at(_cells, _next_cells, x, y, type);
+        if (scan_left_to_right) {
+            // Left to right scan
+            for (int x = 0; x < _width; ++x) {
+                if (const ElementType *type = _cells.get_type(x, y)) {
+                    type->step_particle_at(_cells, _next_cells, x, y, type);
+                }
+            }
+        } else {
+            // Right to left scan
+            for (int x = _width - 1; x >= 0; --x) {
+                if (const ElementType *type = _cells.get_type(x, y)) {
+                    type->step_particle_at(_cells, _next_cells, x, y, type);
+                }
             }
         }
     }
 
     _cells = std::move(_next_cells);
+    _step_count++;
 }
 
 void Simulation::set_type_at(const int x, const int y, const ElementType *type, const int colorIdx)
@@ -71,7 +85,7 @@ int Simulation::flatten_coords(const int x, const int y) const
     return y * _width + x;
 }
 
-int Simulation::flatten_coords(const Point &pos) const
+int Simulation::flatten_coords(const Vector2I &pos) const
 {
     return flatten_coords(pos.x, pos.y);
 }
@@ -84,4 +98,17 @@ ElementType* Simulation::get_type_by_id(const std::string &id) const
 std::vector<const ElementType *> Simulation::get_all_element_types() const
 {
     return _element_registry.get_all_types();
+}
+
+bool Simulation::is_pos_empty(const Vector2I &pos) const
+{
+    return is_pos_empty(pos.x, pos.y);
+}
+
+bool Simulation::is_pos_empty(const int x, const int y) const
+{
+    const auto cell_type = get_type_at(x, y);
+    if (cell_type == nullptr) // TODO: Surely there's a better way to represent this?
+        return false;
+    return get_type_at(x, y)->get_id() == "EMPTY";
 }

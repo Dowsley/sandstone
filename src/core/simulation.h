@@ -8,20 +8,21 @@
 #include <raylib.h>
 #include <vector>
 
-#include "../structures/point.h"
+#include "../types/vector2i.h"
 #include "../elements/element_registry.h"
 #include "cell_matrix.h"
+#include "../../../../../../Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 
 class Simulation {
 public:
     Simulation(int width, int height, ElementRegistry& element_registry);
-    explicit Simulation(const Point &size, ElementRegistry& element_registry);
+    explicit Simulation(const Vector2I &size, ElementRegistry& element_registry);
     ~Simulation() = default;
 
-    const Point UP = Point(0, -1);
-    const Point DOWN = Point(0, 1);
-    const Point RIGHT = Point(1, 0);
-    const Point LEFT = Point(-1, 0);
+    const Vector2I UP = Vector2I(0, -1);
+    const Vector2I DOWN = Vector2I(0, 1);
+    const Vector2I RIGHT = Vector2I(1, 0);
+    const Vector2I LEFT = Vector2I(-1, 0);
 
     void step();
 
@@ -34,16 +35,19 @@ public:
     int get_height() const;
 
     int flatten_coords(int x, int y) const;
-    int flatten_coords(const Point &pos) const;
+    int flatten_coords(const Vector2I &pos) const;
 
     ElementType* get_type_by_id(const std::string &id) const;
     std::vector<const ElementType*> get_all_element_types() const;
+    bool is_pos_empty(const Vector2I &pos) const;
+    bool is_pos_empty(int x, int y) const;
 
 private:
     ElementRegistry& _element_registry;
     
     int _width;
     int _height;
+    int _step_count = 0;
 
     CellMatrix _cells;
     CellMatrix _next_cells;
