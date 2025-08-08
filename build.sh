@@ -3,7 +3,7 @@
 # Sandstone build script using vcpkg
 set -e
 
-VCPKG_ROOT="../vcpkg"
+VCPKG_ROOT="/opt/vcpkg"
 
 echo "Building Sandstone with vcpkg..."
 

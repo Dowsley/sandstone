@@ -2,5 +2,4 @@
 *.exe
 cmake-build-debug
 build/
-.clion-vcpkg/
 .DS_Store
