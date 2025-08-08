@@ -5,6 +5,7 @@
 #include <string>
 
 #include "core/simulation.h"
+#include "systems/input_system.h"
 
 constexpr int VIRTUAL_WIDTH  = 200;
 constexpr int VIRTUAL_HEIGHT = 150;
@@ -24,7 +25,7 @@ public:
     Application()
     {
         _element_registry.initialize();
-        _graphics = _initialize_graphics(
+        _graphics = initialize_graphics(
             VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
             WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -33,15 +34,22 @@ public:
                 _type_ids.push_back(type->get_id());
             }
         }
+
+        _input.create_action(
+            "cycle_element", { KEY_SPACE });
+        _input.create_action(
+            "increase_brush_size", { KEY_TAB });
+        _input.create_action(
+            "decrease_brush_size", { KEY_LEFT_SHIFT });
     }
 
     void run()
     {
         while (!WindowShouldClose()) {
-            _handle_input();
+            handle_input();
             _sim.step();
             _sim.fill_render_buffer(_graphics.pixels);
-            _draw_frame();
+            draw_frame();
         }
         
         UnloadTexture(_graphics.canvas);
@@ -54,17 +62,14 @@ private:
     
     ElementRegistry _element_registry { "WHATEVER FOR NOW" };
     Simulation _sim { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, _element_registry };
+    InputSystem _input;
     
     uint _brush_size = 1;
     std::vector<std::string> _type_ids;
     size_t _current_type_idx = 0;
     
-    bool _cycle_key_prev = false;
-    bool _increase_brush_key_prev = false;
-    bool _decrease_brush_key_prev = false;
-
-    static Graphics _initialize_graphics(const int virtual_width, const int virtual_height,
-        const int window_width, const int window_height)
+    static Graphics initialize_graphics(const int virtual_width,
+        const int virtual_height, const int window_width, const int window_height)
     {
         InitWindow(window_width, window_height, "Sandstone Simulation");
         SetTargetFPS(120);
@@ -80,7 +85,7 @@ private:
         return { canvas, pixels };
     }
 
-    void _draw_frame() const
+    void draw_frame() const
     {
         UpdateTexture(_graphics.canvas, _graphics.pixels);
         BeginDrawing();
@@ -96,7 +101,7 @@ private:
         EndDrawing();
     }
 
-    void _draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
+    void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
     { 
         // TODO: Encapsulate this under a `within_bounds` func
         for (int x = pos.x - expand_brush; x < pos.x + expand_brush + 1; x++) {
@@ -111,13 +116,15 @@ private:
         }
     }
 
-    static size_t _get_next_type_index(const size_t current, const size_t total)
+    static size_t get_next_type_index(const size_t current, const size_t total)
     {
         return (current + 1) % total;
     }
 
-    void _handle_input()
+    void handle_input()
     {
+        _input.update();
+        
         auto [x, y] = GetMousePosition();
         const Vector2 current_mouse_pos = {
             x / RES_SCALE,
@@ -127,27 +134,21 @@ private:
         const std::string& current_type_id = _type_ids[_current_type_idx];
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-            _draw_at_pos(Vector2I(current_mouse_pos), current_type_id, _brush_size-1);
+            draw_at_pos(Vector2I(current_mouse_pos), current_type_id, _brush_size-1);
         }
     
-        const bool cycle_key = IsKeyDown(KEY_SPACE);
-        if (cycle_key && !_cycle_key_prev) {
-            _current_type_idx = _get_next_type_index(_current_type_idx, _type_ids.size());
+        if (_input.is_action_just_pressed("cycle_element")) {
+            _current_type_idx = get_next_type_index(_current_type_idx, _type_ids.size());
         }
-        _cycle_key_prev = cycle_key;
-
-        const bool increase_brush_key = IsKeyDown(KEY_TAB);
-        if (increase_brush_key && !_increase_brush_key_prev) {
+        
+        if (_input.is_action_just_pressed("increase_brush_size")) {
             _brush_size++;
         }
-        _increase_brush_key_prev = increase_brush_key;
 
-        const bool decrease_brush_key = IsKeyDown(KEY_LEFT_SHIFT);
-        if (decrease_brush_key && !_decrease_brush_key_prev) {
+        if (_input.is_action_just_pressed("decrease_brush_size")) {
             if (_brush_size > 1)
                 _brush_size--;
         }
-        _decrease_brush_key_prev = decrease_brush_key;
     }
 };
 

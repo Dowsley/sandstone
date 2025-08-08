@@ -35,7 +35,9 @@ add_executable(sandstone src/main.cpp
         src/core/cell_matrix.cpp
         src/core/cell_matrix.h
         src/elements/empty.cpp
-        src/elements/empty.h)
+        src/elements/empty.h
+        src/systems/input_system.cpp
+        src/systems/input_system.h)
 target_link_libraries(sandstone PRIVATE raylib glfw)
 
 if(UNIX AND NOT APPLE)
