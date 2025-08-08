@@ -53,8 +53,8 @@ void draw_frame(const Texture2D &canvas, const Color *pixels)
 
 void draw_at_pos(
     Simulation &sim, const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
-{
-    // TODO: Implement checking here
+{ 
+    // TODO: Encapsulate this under a `within_bounds` func
     for (int x = pos.x - expand_brush; x < pos.x + expand_brush + 1; x++) {
         for (int y = pos.y - expand_brush; y < pos.y + expand_brush + 1; y++) {
             if (x >= 0 && x < VIRTUAL_WIDTH && y >= 0 && y < VIRTUAL_HEIGHT) {

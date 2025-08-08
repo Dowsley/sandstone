@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.21)
 project(sandstone VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(lib/raylib)
+find_package(raylib CONFIG REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
 
 add_executable(sandstone src/main.cpp
         src/core/simulation.cpp
@@ -35,7 +36,7 @@ add_executable(sandstone src/main.cpp
         src/core/cell_matrix.h
         src/elements/empty.cpp
         src/elements/empty.h)
-target_link_libraries(sandstone PRIVATE raylib)
+target_link_libraries(sandstone PRIVATE raylib glfw)
 
 if(UNIX AND NOT APPLE)
     target_link_libraries(sandstone PRIVATE m pthread dl rt X11)

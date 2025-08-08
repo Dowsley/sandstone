@@ -1,6 +1,29 @@
 ## Sandstone
 
-Falling sand simulation. Depends on src/raylib (checked at tag 5.5)
+Falling sand simulation using Raylib and vcpkg for dependency management.
+
+## Building
+
+### Prerequisites
+- CMake 3.21+
+- C++20 compiler
+- vcpkg (cloned to `../vcpkg/`)
+
+### Quick Build
+```bash
+./build.sh
+```
+
+### Manual Build
+```bash
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build
+```
+
+### Running
+```bash
+./build/sandstone
+```
 
 ## TODO
 - [X] Basic sim
@@ -11,7 +34,7 @@ Falling sand simulation. Depends on src/raylib (checked at tag 5.5)
   - [X] Liquid
 - [X] Brush/sizes
 - [ ] Main Application Class
-- [ ] Better build system/dependency handler
+- [X] Better build system/dependency handler
 - [ ] Input handler
 - [ ] Properties
   - Density

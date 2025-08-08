@@ -11,7 +11,6 @@
 #include "../types/vector2i.h"
 #include "../elements/element_registry.h"
 #include "cell_matrix.h"
-#include "../../../../../../Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/Carbon.framework/Frameworks/HIToolbox.framework/Headers/MacTextEditor.h"
 
 class Simulation {
 public:
