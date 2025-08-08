@@ -18,127 +18,143 @@ struct Graphics {
     Color *pixels;
 };
 
-Graphics initialize_graphics(const int virtual_width, const int virtual_height,
-    const int window_width, const int window_height)
+class Application
 {
-    InitWindow(window_width, window_height, "Sandstone Simulation");
-    SetTargetFPS(120);
+public:
+    Application()
+    {
+        _element_registry.initialize();
+        _graphics = _initialize_graphics(
+            VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
+            WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    const Image init_image = GenImageColor(virtual_width, virtual_height, BLACK);
-    const Texture2D canvas = LoadTextureFromImage(init_image);
-    UnloadImage(init_image);
-    SetTextureFilter(canvas, TEXTURE_FILTER_POINT);
+        for (const auto* type : _sim.get_all_element_types()) {
+            if (type->get_id() != "EMPTY") {
+                _type_ids.push_back(type->get_id());
+            }
+        }
+    }
 
-    const auto pixels = static_cast<Color*>(MemAlloc(virtual_width * virtual_height * sizeof(Color)));
-    memset(pixels, 0, virtual_width * virtual_height * sizeof(Color));
+    void run()
+    {
+        while (!WindowShouldClose()) {
+            _handle_input();
+            _sim.step();
+            _sim.fill_render_buffer(_graphics.pixels);
+            _draw_frame();
+        }
+        
+        UnloadTexture(_graphics.canvas);
+        MemFree(_graphics.pixels);
+        CloseWindow();
+    }
 
-    return { canvas, pixels };
-}
+private:
+    Graphics _graphics;
+    
+    ElementRegistry _element_registry { "WHATEVER FOR NOW" };
+    Simulation _sim { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, _element_registry };
+    
+    uint _brush_size = 1;
+    std::vector<std::string> _type_ids;
+    size_t _current_type_idx = 0;
+    
+    bool _cycle_key_prev = false;
+    bool _increase_brush_key_prev = false;
+    bool _decrease_brush_key_prev = false;
 
-void draw_frame(const Texture2D &canvas, const Color *pixels)
-{
-    UpdateTexture(canvas, pixels);
-    BeginDrawing();
-    ClearBackground(BLACK);
-    DrawTexturePro(
-        canvas,
-        Rectangle{0, 0, static_cast<float>(VIRTUAL_WIDTH), static_cast<float>(VIRTUAL_HEIGHT)},
-        Rectangle{0, 0, static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT)},
-        Vector2{0, 0},
-        0.0f,
-        WHITE
-    );
-    EndDrawing();
-}
+    static Graphics _initialize_graphics(const int virtual_width, const int virtual_height,
+        const int window_width, const int window_height)
+    {
+        InitWindow(window_width, window_height, "Sandstone Simulation");
+        SetTargetFPS(120);
 
-void draw_at_pos(
-    Simulation &sim, const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
-{ 
-    // TODO: Encapsulate this under a `within_bounds` func
-    for (int x = pos.x - expand_brush; x < pos.x + expand_brush + 1; x++) {
-        for (int y = pos.y - expand_brush; y < pos.y + expand_brush + 1; y++) {
-            if (x >= 0 && x < VIRTUAL_WIDTH && y >= 0 && y < VIRTUAL_HEIGHT) {
-                if (sim.is_pos_empty(x, y)) {
-                    const auto type = sim.get_type_by_id(type_id);
-                    sim.set_type_at(x, y, type, type->get_random_color_index());
+        const Image init_image = GenImageColor(virtual_width, virtual_height, BLACK);
+        const Texture2D canvas = LoadTextureFromImage(init_image);
+        UnloadImage(init_image);
+        SetTextureFilter(canvas, TEXTURE_FILTER_POINT);
+
+        const auto pixels = static_cast<Color*>(MemAlloc(virtual_width * virtual_height * sizeof(Color)));
+        memset(pixels, 0, virtual_width * virtual_height * sizeof(Color));
+
+        return { canvas, pixels };
+    }
+
+    void _draw_frame() const
+    {
+        UpdateTexture(_graphics.canvas, _graphics.pixels);
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawTexturePro(
+            _graphics.canvas,
+            Rectangle{0, 0, static_cast<float>(VIRTUAL_WIDTH), static_cast<float>(VIRTUAL_HEIGHT)},
+            Rectangle{0, 0, static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT)},
+            Vector2{0, 0},
+            0.0f,
+            WHITE
+        );
+        EndDrawing();
+    }
+
+    void _draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
+    { 
+        // TODO: Encapsulate this under a `within_bounds` func
+        for (int x = pos.x - expand_brush; x < pos.x + expand_brush + 1; x++) {
+            for (int y = pos.y - expand_brush; y < pos.y + expand_brush + 1; y++) {
+                if (x >= 0 && x < VIRTUAL_WIDTH && y >= 0 && y < VIRTUAL_HEIGHT) {
+                    if (_sim.is_pos_empty(x, y)) {
+                        const auto type = _sim.get_type_by_id(type_id);
+                        _sim.set_type_at(x, y, type, type->get_random_color_index());
+                    }
                 }
             }
         }
     }
-}
 
-size_t get_next_type_index(const size_t current, const size_t total)
-{
-    return (current + 1) % total;
-}
-
-void handle_input(Simulation &sim, const std::vector<std::string> &type_ids,
-    size_t &current_type_idx, bool &cycle_key_prev, bool &increase_brush_key_prev,
-    bool &decrease_brush_key_prev, uint &brush_size)
-{
-    auto [x, y] = GetMousePosition();
-    const Vector2 current_mouse_pos = {
-        x / RES_SCALE,
-        y / RES_SCALE
-    };
-
-    const std::string& current_type_id = type_ids[current_type_idx];
-
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-        draw_at_pos(sim, Vector2I(current_mouse_pos), current_type_id, brush_size-1);
+    static size_t _get_next_type_index(const size_t current, const size_t total)
+    {
+        return (current + 1) % total;
     }
+
+    void _handle_input()
+    {
+        auto [x, y] = GetMousePosition();
+        const Vector2 current_mouse_pos = {
+            x / RES_SCALE,
+            y / RES_SCALE
+        };
+
+        const std::string& current_type_id = _type_ids[_current_type_idx];
+
+        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+            _draw_at_pos(Vector2I(current_mouse_pos), current_type_id, _brush_size-1);
+        }
     
-    const bool cycle_key = IsKeyDown(KEY_SPACE);
-    if (cycle_key && !cycle_key_prev) {
-        current_type_idx = get_next_type_index(current_type_idx, type_ids.size());
-    }
-    cycle_key_prev = cycle_key;
+        const bool cycle_key = IsKeyDown(KEY_SPACE);
+        if (cycle_key && !_cycle_key_prev) {
+            _current_type_idx = _get_next_type_index(_current_type_idx, _type_ids.size());
+        }
+        _cycle_key_prev = cycle_key;
 
-    const bool increase_brush_key = IsKeyDown(KEY_TAB);
-    if (increase_brush_key && !increase_brush_key_prev) {
-        brush_size++;
-    }
-    increase_brush_key_prev = increase_brush_key;
+        const bool increase_brush_key = IsKeyDown(KEY_TAB);
+        if (increase_brush_key && !_increase_brush_key_prev) {
+            _brush_size++;
+        }
+        _increase_brush_key_prev = increase_brush_key;
 
-    const bool decrease_brush_key = IsKeyDown(KEY_LEFT_SHIFT);
-    if (decrease_brush_key && !decrease_brush_key_prev) {
-        if (brush_size > 1) brush_size--;
+        const bool decrease_brush_key = IsKeyDown(KEY_LEFT_SHIFT);
+        if (decrease_brush_key && !_decrease_brush_key_prev) {
+            if (_brush_size > 1)
+                _brush_size--;
+        }
+        _decrease_brush_key_prev = decrease_brush_key;
     }
-    decrease_brush_key_prev = decrease_brush_key;
-}
+};
 
 int main()
 {
-    uint brush_size = 1;
+    Application _app;
+    _app.run();
     
-    ElementRegistry element_registry { "WHATEVER FOR NOW" };
-    element_registry.initialize();
-    
-    Simulation sim(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, element_registry);
-    const auto [canvas, pixels] = initialize_graphics(
-        VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
-        WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    std::vector<std::string> type_ids;
-    for (const auto* type : sim.get_all_element_types()) {
-        if (type->get_id() != "EMPTY") {
-            type_ids.push_back(type->get_id());
-        }
-    }
-    
-    size_t current_type_idx = 0;
-    bool cycle_key_prev = false;
-    bool increase_brush_key_prev = false;
-    bool decrease_brush_key_prev = false;
-    while (!WindowShouldClose()) {
-        handle_input(sim, type_ids, current_type_idx, cycle_key_prev,
-            increase_brush_key_prev, decrease_brush_key_prev, brush_size);
-        sim.step();
-        sim.fill_render_buffer(pixels);
-        draw_frame(canvas, pixels);
-    }
-    UnloadTexture(canvas);
-    MemFree(pixels);
-    CloseWindow();
     return 0;
 }

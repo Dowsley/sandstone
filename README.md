@@ -33,13 +33,14 @@ cmake --build build
   - [X] Solids
   - [X] Liquid
 - [X] Brush/sizes
-- [ ] Main Application Class
+- [X] Main Application Class
 - [X] Better build system/dependency handler
-- [ ] Input handler
+- [ ] Basic Input handler
 - [ ] Properties
-  - Density
-  - Priority
-  - Friction (chance of moving solid sliding down)
+  - [ ] Density
+    - While I am at it, fix the teleporting water problem.
+  - Priority?
+  - Friction (chance of moving solid sliding down)?
 - [ ] Data-driven approach
   - XML loading like in live-world-engine
 - [ ] Better water behavior
