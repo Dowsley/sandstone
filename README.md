@@ -35,9 +35,7 @@ cmake --build build
 - [X] Brush/sizes
 - [X] Main Application Class
 - [X] Better build system/dependency handler
-- [ ] Basic Input handler
-  - [ ] Keys
-  - [ ] Mouse
+- [X] Basic Input handler
 - [ ] Properties
   - [ ] Density
     - While I am at it, fix the teleporting water problem.

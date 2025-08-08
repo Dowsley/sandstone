@@ -12,6 +12,37 @@
 #include <optional>
 
 /**
+ * @brief Represents either a keyboard key or mouse button input.
+ * 
+ * Wraps integer codes to distinguish between keyboard keys and mouse buttons,
+ * since both use integer representations in Raylib.
+ */
+struct InputCode {
+    enum Type { KEY, MOUSE_BUTTON };
+    
+    Type type;
+    int code;
+    
+    InputCode(const Type t, const int c) : type(t), code(c) {}
+    
+    // Convenience constructors
+    static InputCode key(const int keycode) { return InputCode(KEY, keycode); }
+    static InputCode mouse(const int button) { return InputCode(MOUSE_BUTTON, button); }
+    
+    // For use in unordered containers
+    bool operator==(const InputCode& other) const {
+        return type == other.type && code == other.code;
+    }
+};
+
+// Hash function for InputCode to use in unordered_set/map.
+struct InputCodeHash {
+    std::size_t operator()(const InputCode& input) const {
+        return std::hash<int>()(input.type) ^ (std::hash<int>()(input.code) << 1);
+    }
+};
+
+/**
  * @brief Handles inputs for RayLib in the same style as Godot's Input class, based on named actions.
  * 
  * @see https://www.raylib.com/cheatsheet/cheatsheet.html
@@ -19,22 +50,19 @@
 class InputSystem
 {
 private:
-    // TODO: Add mouse input handling
-    
-    std::unordered_map<std::string, std::unordered_set<int>> _actions;
-    std::unordered_set<int> _previous_keyboard_state;
-    std::unordered_set<int> _current_keyboard_state;
+    // TODO: Wrap these unordered sets into a "State" type
+    std::unordered_map<std::string, std::unordered_set<InputCode, InputCodeHash>> _actions;
+    std::unordered_set<InputCode, InputCodeHash> _previous_input_state;
+    std::unordered_set<InputCode, InputCodeHash> _current_input_state;
 
-    std::unordered_set<int> _watched_keys; // Cache of all keys referenced by any key action
-    void rebuild_watched_keys();
+    // Cache of all inputs referenced by any action
+    std::unordered_set<InputCode, InputCodeHash> _watched_inputs; 
+    void rebuild_watched_inputs();
 
-    bool is_key_down(int key) const;
-
-    bool is_key_up(int key) const;
-
-    bool was_key_down(int key) const;
-
-    bool was_key_up(int key) const;
+    bool is_input_down(const InputCode& input) const;
+    bool is_input_up(const InputCode& input) const;
+    bool was_input_down(const InputCode& input) const;
+    bool was_input_up(const InputCode& input) const;
 
 public:
     /**
@@ -45,35 +73,35 @@ public:
     void update();
 
     /**
-     * @brief Creates an action that will listen to the specified keys.
+     * @brief Creates an action that will listen to the specified inputs.
      * 
      * Overwrites any existing action with the same name.
      * 
      * @param action_name Name of the action to create
-     * @param action_keys_list List of key codes to associate with this action
+     * @param action_inputs_list List of InputCodes (keys/mouse buttons) to associate with this action
      */
     void create_action(const std::string &action_name,
-        const std::list<int> &action_keys_list);
+        const std::list<InputCode> &action_inputs_list);
 
     /**
-     * @brief Appends a key to an existing action.
+     * @brief Appends an input to an existing action.
      * 
      * Fails if the action does not exist.
-     * Adding an existing key will have no effect.
+     * Adding an existing input will have no effect.
      * 
      * @param action_name Name of the action to modify
-     * @param action_key Key code to add to the action
-     * @return True if the key was added; false if the action does not exist
+     * @param action_input InputCode (key/mouse button) to add to the action
+     * @return True if the input was added; false if the action does not exist
      */
-    bool add_key_to_action(const std::string &action_name, int action_key);
+    bool add_input_to_action(const std::string &action_name, const InputCode &action_input);
     
     /**
-     * @brief Retrieves the keys associated with an action.
+     * @brief Retrieves the inputs associated with an action.
      * 
      * @param name Name of the action to query
-     * @return The keys if the action exists; otherwise, std::nullopt
+     * @return The inputs if the action exists; otherwise, std::nullopt
      */
-    std::optional<std::unordered_set<int>> get_keys_from_action(
+    std::optional<std::unordered_set<InputCode, InputCodeHash>> get_inputs_from_action(
         const std::string &name) const;
 
     /**

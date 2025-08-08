@@ -35,12 +35,17 @@ public:
             }
         }
 
+        _input.create_action("place_element",
+            { InputCode::mouse(MOUSE_LEFT_BUTTON) });
         _input.create_action(
-            "cycle_element", { KEY_SPACE });
+            "cycle_element",
+            { InputCode::key(KEY_SPACE) });
         _input.create_action(
-            "increase_brush_size", { KEY_TAB });
+            "increase_brush_size",
+            { InputCode::key(KEY_TAB) });
         _input.create_action(
-            "decrease_brush_size", { KEY_LEFT_SHIFT });
+            "decrease_brush_size",
+            { InputCode::key(KEY_LEFT_SHIFT) });
     }
 
     void run()
@@ -133,7 +138,7 @@ private:
 
         const std::string& current_type_id = _type_ids[_current_type_idx];
 
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        if (_input.is_action_pressed("place_element")) {
             draw_at_pos(Vector2I(current_mouse_pos), current_type_id, _brush_size-1);
         }
     
