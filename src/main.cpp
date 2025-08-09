@@ -130,10 +130,10 @@ private:
     {
         _input.update();
         
-        auto [x, y] = GetMousePosition();
+        auto [x_screen, y_screen] = _input.get_mouse_position();
         const Vector2 current_mouse_pos = {
-            x / RES_SCALE,
-            y / RES_SCALE
+            x_screen / RES_SCALE,
+            y_screen / RES_SCALE
         };
 
         const std::string& current_type_id = _type_ids[_current_type_idx];

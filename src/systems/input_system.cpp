@@ -39,6 +39,13 @@ void InputSystem::update()
     _previous_input_state = std::move(_current_input_state);
     _current_input_state.clear();
 
+    // Update mouse state
+    _previous_mouse_position = _current_mouse_position;
+    _previous_mouse_wheel = _current_mouse_wheel;
+    
+    _current_mouse_position = GetMousePosition();
+    _current_mouse_wheel = GetMouseWheelMove();
+
     for (const InputCode &input : _watched_inputs) {
         bool is_pressed = false;
         if (input.type == InputCode::KEY) {
@@ -124,4 +131,22 @@ bool InputSystem::is_action_just_released(const std::string &action_name) const
            });
     }
     return false;
+}
+
+Vector2 InputSystem::get_mouse_position() const
+{
+    return _current_mouse_position;
+}
+
+Vector2 InputSystem::get_mouse_delta() const
+{
+    return Vector2{
+        _current_mouse_position.x - _previous_mouse_position.x,
+        _current_mouse_position.y - _previous_mouse_position.y
+    };
+}
+
+float InputSystem::get_mouse_scroll_delta() const
+{
+    return _current_mouse_wheel - _previous_mouse_wheel;
 }

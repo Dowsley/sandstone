@@ -10,6 +10,8 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <optional>
+#include <functional>
+#include <raylib.h>
 
 /**
  * @brief Represents either a keyboard key or mouse button input.
@@ -56,9 +58,15 @@ private:
     std::unordered_set<InputCode, InputCodeHash> _current_input_state;
 
     // Cache of all inputs referenced by any action
-    std::unordered_set<InputCode, InputCodeHash> _watched_inputs; 
+    std::unordered_set<InputCode, InputCodeHash> _watched_inputs;
+    
+    // Mouse state tracking
+    Vector2 _current_mouse_position = {};
+    Vector2 _previous_mouse_position = {};
+    float _current_mouse_wheel = 0;
+    float _previous_mouse_wheel = 0;
+    
     void rebuild_watched_inputs();
-
     bool is_input_down(const InputCode& input) const;
     bool is_input_up(const InputCode& input) const;
     bool was_input_down(const InputCode& input) const;
@@ -147,6 +155,34 @@ public:
      * @return True if at least one key was just released; otherwise, false
      */
     bool is_action_just_released(const std::string &action_name) const;
+
+
+    /**
+     * @brief Gets the current mouse position in screen coordinates.
+     * 
+     * Requires update() to be called once per frame.
+     * 
+     * @return A Vector2 representing the mouse's X and Y coordinates
+     */
+    Vector2 get_mouse_position() const;
+
+    /**
+     * @brief Gets the change in mouse position since the last frame.
+     * 
+     * Requires update() to be called once per frame.
+     * 
+     * @return A Vector2 representing the delta in mouse X and Y coordinates
+     */
+    Vector2 get_mouse_delta() const;
+
+    /**
+     * @brief Gets the change in mouse scroll-wheel value since the last frame.
+     * 
+     * Requires update() to be called once per frame.
+     * 
+     * @return The difference in scroll-wheel value
+     */
+    float get_mouse_scroll_delta() const;
 };
 
 #endif //SANDSTONE_INPUT_SYSTEM_H
