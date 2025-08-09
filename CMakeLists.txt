@@ -37,7 +37,9 @@ add_executable(sandstone src/main.cpp
         src/elements/empty.cpp
         src/elements/empty.h
         src/systems/input_system.cpp
-        src/systems/input_system.h)
+        src/systems/input_system.h
+        src/elements/types/gas.cpp
+        src/elements/types/gas.h)
 target_link_libraries(sandstone PRIVATE raylib glfw)
 
 if(UNIX AND NOT APPLE)

@@ -3,7 +3,6 @@
 //
 
 #include "immovable_solid.h"
-#include "../../core/cell_data.h"
 
 bool ImmovableSolid::step_particle_at(
     CellMatrix &curr_cells,

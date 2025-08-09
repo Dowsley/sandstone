@@ -5,6 +5,7 @@
 #include "element_registry.h"
 
 #include "empty.h"
+#include "types/gas.h"
 #include "types/movable_solid.h"
 #include "types/immovable_solid.h"
 #include "types/liquid.h"
@@ -54,6 +55,14 @@ std::vector<ElementType*> ElementRegistry::_load_specific() {
         ->add_color_variant({ 15,93,226, 255 });
         // ->add_color_variant({ 117, 164, 246, 255 });
     elements.push_back(water);
+
+    const auto steam = (new Gas())
+        ->set_id("STEAM")
+        ->set_name("Steam")
+        ->set_description("This is the steam element.")
+        ->set_density(1)
+        ->add_color_variant({ 255/2, 255/2, 255/2, 255 });
+    elements.push_back(steam);
     
     return elements;
 }

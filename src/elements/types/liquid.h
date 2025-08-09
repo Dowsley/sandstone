@@ -7,9 +7,8 @@
 
 #include "../element_type.h"
 
-class Simulation;
-
-class Liquid final : public ElementType {
+class Liquid final : public ElementType
+{
 protected:
     int _boiling_point = 0;
     int _freezing_point = 0;

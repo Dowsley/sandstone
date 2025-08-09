@@ -7,6 +7,7 @@
 
 #include "cell_data.h"
 #include "../elements/element_registry.h"
+#include "../types/vector2i.h"
 
 #include <vector>
 
@@ -26,6 +27,8 @@ public:
     CellData& get(int idx);
     const ElementType* get_type(int x, int y) const;
     const ElementType* get_type(int idx) const;
+    bool is_of_type(int x, int y, const std::string &type_id) const;
+    bool is_of_type(const Vector2I &pos, const std::string &type_id) const;
     int get_color_variation_index(int x, int y) const;
     int get_color_variation_index(int idx) const;
     void set(int x, int y, const CellData &cell_data);

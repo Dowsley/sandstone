@@ -41,6 +41,20 @@ const ElementType* CellMatrix::get_type(const int idx) const
     return _cells[idx].type;
 }
 
+bool CellMatrix::is_of_type(const int x, const int y,
+    const std::string &type_id) const
+{
+    const auto type = get_type(x, y);
+    if (type == nullptr)
+        return false;
+    return type->get_id() == type_id;
+}
+
+bool CellMatrix::is_of_type(const Vector2I &pos, const std::string &type_id) const
+{
+    return is_of_type(pos.x, pos.y, type_id);
+}
+
 int CellMatrix::get_color_variation_index(const int x, const int y) const
 {
     const int idx = flatten_coords(x, y);

@@ -13,8 +13,15 @@ bool MovableSolid::step_particle_at(
 {
     // Try to move down
     if (curr_cells.within_bounds(x, y + 1)) {
-        if (const auto below_type = next_cells.get_type(x, y + 1);
-            below_type && (below_type->get_id() == "EMPTY" || below_type->get_id() == "WATER")) {
+        // TODO: make this NOT hardcoded for types id, but instead for types.
+        // TODO: In fact, might as well just fix all of this system lol system
+        const auto below_type = next_cells.get_type(x, y + 1);
+        if (below_type &&
+            (below_type->get_id() == "EMPTY"
+                || below_type->get_id() == "WATER"
+                || below_type->get_id() == "STEAM"
+            )
+        ) {
             next_cells.get(x, y + 1) = curr_cells.get(x, y);
             next_cells.get(x, y) = CellData{below_type, 0};
             return true;
