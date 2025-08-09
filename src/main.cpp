@@ -108,14 +108,11 @@ private:
 
     void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
     { 
-        // TODO: Encapsulate this under a `within_bounds` func
         for (int x = pos.x - expand_brush; x < pos.x + expand_brush + 1; x++) {
             for (int y = pos.y - expand_brush; y < pos.y + expand_brush + 1; y++) {
-                if (x >= 0 && x < VIRTUAL_WIDTH && y >= 0 && y < VIRTUAL_HEIGHT) {
-                    if (_sim.is_pos_empty(x, y)) {
-                        const auto type = _sim.get_type_by_id(type_id);
-                        _sim.set_type_at(x, y, type, type->get_random_color_index());
-                    }
+                if (_sim.is_pos_empty(x, y)) {
+                    const auto type = _sim.get_type_by_id(type_id);
+                    _sim.set_type_at(x, y, type, type->get_random_color_index());
                 }
             }
         }

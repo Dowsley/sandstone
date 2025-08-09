@@ -43,26 +43,45 @@ void Simulation::step()
     _step_count++;
 }
 
-void Simulation::set_type_at(const int x, const int y, const ElementType *type, const int colorIdx)
+bool Simulation::set_type_at(const int x, const int y,
+    const ElementType *type, const int colorIdx)
 {
-    if (x >= 0 && x < _width && y >= 0 && y < _height) { // TODO: Encapsulate this under a `within_bounds` func
-        _cells.get(x, y).type = type;
-        if (colorIdx > -1)
-            _cells.set_color_variation_index(x, y, colorIdx);
-    }
+    if (!is_pos_within_bounds(x, y))
+        return false;
+
+    _cells.get(x, y).type = type;
+    if (colorIdx > -1)
+        _cells.set_color_variation_index(x, y, colorIdx);
+    return true;
 }
 
-void Simulation::set_type_at(const int x, const int y, const std::string &id, const int colorIdx)
+bool Simulation::set_type_at(const Vector2I &pos, const ElementType *type, int colorIdx)
 {
-    set_type_at(x, y, _element_registry.get_type_by_id(id), colorIdx);
+    return set_type_at(pos.x, pos.y, type, colorIdx);
+}
+
+bool Simulation::set_type_at(const int x, const int y,
+                             const std::string &id, const int colorIdx)
+{
+    return set_type_at(x, y, _element_registry.get_type_by_id(id), colorIdx);
+}
+
+bool Simulation::set_type_at(const Vector2I &pos, const std::string &id, int colorIdx)
+{
+    return set_type_at(pos, _element_registry.get_type_by_id(id), colorIdx);
 }
 
 const ElementType* Simulation::get_type_at(const int x, const int y) const
 {
-    if (x >= 0 && x < _width && y >= 0 && y < _height) {
-        return _cells.get_type(x, y);
+    if (!is_pos_within_bounds(x, y)) {
+        return nullptr;
     }
-    return nullptr;
+    return _cells.get_type(x, y);
+}
+
+const ElementType * Simulation::get_type_at(const Vector2I &pos) const
+{
+    return get_type_at(pos.x, pos.y);
 }
 
 void Simulation::fill_render_buffer(Color *dst) const
@@ -111,4 +130,14 @@ bool Simulation::is_pos_empty(const int x, const int y) const
     if (cell_type == nullptr) // TODO: Surely there's a better way to represent this?
         return false;
     return get_type_at(x, y)->get_id() == "EMPTY";
+}
+
+bool Simulation::is_pos_within_bounds(const Vector2I &pos) const
+{
+    return is_pos_within_bounds(pos.x, pos.y);
+}
+
+bool Simulation::is_pos_within_bounds(const int x, const int y) const
+{
+    return x >= 0 && x < _width && y >= 0 && y < _height;
 }

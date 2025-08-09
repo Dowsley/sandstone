@@ -36,6 +36,7 @@ cmake --build build
 - [X] Main Application Class
 - [X] Better build system/dependency handler
 - [X] Basic Input handler
+- [ ] Gases
 - [ ] Properties
   - [ ] Density
     - While I am at it, fix the teleporting water problem.
@@ -43,12 +44,12 @@ cmake --build build
   - Friction (chance of moving solid sliding down)?
 - [ ] Data-driven approach
   - XML loading like in live-world-engine
+- [ ] No more raw pointers
 - [ ] Better water behavior
   - Dispersion rate
 - [ ] Extremely basic UI
   - [ ] Brush size
   - [ ] Element chooser
-- [ ] Gases
 - [ ] Particle System
 - [ ] Rigid Body System
 - [ ] Temperatures

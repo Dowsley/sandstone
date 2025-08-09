@@ -25,9 +25,12 @@ public:
 
     void step();
 
-    void set_type_at(int x, int y, const ElementType *type, int colorIdx = -1);
-    void set_type_at(int x, int y, const std::string &id, int colorIdx = -1);
+    bool set_type_at(int x, int y, const ElementType *type, int colorIdx = -1);
+    bool set_type_at(const Vector2I &pos, const ElementType *type, int colorIdx = -1);
+    bool set_type_at(int x, int y, const std::string &id, int colorIdx = -1);
+    bool set_type_at(const Vector2I &pos,  const std::string &id, int colorIdx = -1);
     const ElementType* get_type_at(int x, int y) const;
+    const ElementType* get_type_at(const Vector2I &pos) const;
     void fill_render_buffer(Color *dst) const;
 
     int get_width() const;
@@ -40,6 +43,8 @@ public:
     std::vector<const ElementType*> get_all_element_types() const;
     bool is_pos_empty(const Vector2I &pos) const;
     bool is_pos_empty(int x, int y) const;
+    bool is_pos_within_bounds(const Vector2I &pos) const;
+    bool is_pos_within_bounds(int x, int y) const;
 
 private:
     ElementRegistry& _element_registry;
