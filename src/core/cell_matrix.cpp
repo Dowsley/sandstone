@@ -3,6 +3,7 @@
 //
 
 #include "cell_matrix.h"
+#include "../utils/element_type_checker.h"
 
 CellMatrix::CellMatrix(const int width, const int height, const ElementRegistry &element_registry)
     : _width(width), _height(height)
@@ -82,4 +83,80 @@ void CellMatrix::set_color_variation_index(const int x, const int y, uint8_t col
 {
     const int idx = flatten_coords(x, y);
     _cells[idx].color_variant_index = color_variant_index;
+}
+
+bool CellMatrix::is_empty(const int x, const int y) const
+{
+    const ElementType *dest_type = get_type(x, y);
+    return ElementTypeChecker::is_empty(*dest_type);
+}
+
+bool CellMatrix::is_liquid(const int x, const int y) const
+{
+    const ElementType *dest_type = get_type(x, y);
+    return ElementTypeChecker::is_liquid(*dest_type);
+}
+
+bool CellMatrix::is_immovable_solid(const int x, const int y) const
+{
+    const ElementType *dest_type = get_type(x, y);
+    return ElementTypeChecker::is_immovable_solid(*dest_type);
+}
+
+bool CellMatrix::is_movable_solid(const int x, const int y) const
+{
+    const ElementType *dest_type = get_type(x, y);
+    return ElementTypeChecker::is_movable_solid(*dest_type);
+}
+
+bool CellMatrix::is_solid(const int x, const int y) const
+{
+    const ElementType *dest_type = get_type(x, y);
+    return ElementTypeChecker::is_solid(*dest_type);
+}
+
+bool CellMatrix::is_gas(const int x, const int y) const
+{
+    const ElementType *dest_type = get_type(x, y);
+    return ElementTypeChecker::is_gas(*dest_type);
+}
+
+bool CellMatrix::is_empty(const Vector2 &pos) const
+{
+    return is_empty(pos.x, pos.y);
+}
+
+bool CellMatrix::is_liquid(const Vector2 &pos) const
+{
+    return is_liquid(pos.x, pos.y);
+}
+
+bool CellMatrix::is_immovable_solid(const Vector2 &pos) const
+{
+    return is_immovable_solid(pos.x, pos.y);
+}
+
+bool CellMatrix::is_movable_solid(const Vector2 &pos) const
+{
+    return is_movable_solid(pos.x, pos.y);
+}
+
+bool CellMatrix::is_solid(const Vector2 &pos) const
+{
+    return is_solid(pos.x, pos.y);
+}
+
+bool CellMatrix::is_gas(const Vector2 &pos) const
+{
+    return is_gas(pos.x, pos.y);
+}
+
+bool CellMatrix::within_bounds(const int x, const int y) const
+{
+    return x >= 0 && x < _width && y >= 0 && y < _height;
+}
+
+bool CellMatrix::within_bounds(const Vector2 &pos) const
+{
+    return within_bounds(pos.x, pos.y);
 }

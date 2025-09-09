@@ -4,6 +4,9 @@
 
 #include "liquid.h"
 #include "../../core/cell_matrix.h"
+#include "../../utils/element_type_checker.h"
+#include "../../utils/movement_utils.h"
+
 #include <cstdlib>
 
 bool Liquid::step_particle_at(
@@ -27,65 +30,18 @@ bool Liquid::step_particle_at(
     }
 
     // 1. Try to move down
-    const int down_y = y + 1;
-    if (curr_cells.within_bounds(x, down_y)) {
-        const ElementType* dest_type = next_cells.get_type(x, down_y);
-        if (dest_type->get_id() == "EMPTY") {
-            next_cells.get(x, down_y) = curr_cells.get(x, y);
-            next_cells.get(x, y) = { dest_type, 0, 0, 0 };
-            return true;
-        }
+    if (MovementUtils::try_move(curr_cells, next_cells, x, y, 0, 1)) {
+        return true;
     }
 
     // 2. Try to move diagonally down (slide up to max_slide)
-    // Try each distance level for both directions before increasing distance
-    for (int i = 1; i <= max_slide; ++i) {
-        for (int d = 0; d < 2; ++d) {
-            const int dir = dirs[d];
-            const int nx = x + dir * i;
-            const int ny = y + 1;
-            if (!curr_cells.within_bounds(nx, ny)) continue;
-            // Path must be clear horizontally
-            bool path_clear = true;
-            for (int j = 1; j <= i; ++j) {
-                if (next_cells.get_type(x + dir * j, y)->get_id() != "EMPTY") {
-                    path_clear = false;
-                    break;
-                }
-            }
-            if (!path_clear) continue;
-            const ElementType* dest_type = next_cells.get_type(nx, ny);
-            if (dest_type->get_id() == "EMPTY") {
-                next_cells.get(nx, ny) = curr_cells.get(x, y);
-                next_cells.get(x, y) = { dest_type, 0, 0, 0 };
-                return true;
-            }
-        }
+    if (MovementUtils::try_slide_movement(curr_cells, next_cells, x, y, 1, max_slide, dirs)) {
+        return true;
     }
 
     // 3. Try to move sideways (slide up to max_slide)
-    // Try each distance level for both directions before increasing distance
-    for (int i = 1; i <= max_slide; ++i) {
-        for (int d = 0; d < 2; ++d) {
-            const int dir = dirs[d];
-            const int nx = x + dir * i;
-            if (!curr_cells.within_bounds(nx, y)) continue;
-            // Path must be clear horizontally
-            bool path_clear = true;
-            for (int j = 1; j <= i; ++j) {
-                if (next_cells.get_type(x + dir * j, y)->get_id() != "EMPTY") {
-                    path_clear = false;
-                    break;
-                }
-            }
-            if (!path_clear) continue;
-            const ElementType* dest_type = next_cells.get_type(nx, y);
-            if (dest_type->get_id() == "EMPTY") {
-                next_cells.get(nx, y) = curr_cells.get(x, y);
-                next_cells.get(x, y) = { dest_type, 0, 0, 0 };
-                return true;
-            }
-        }
+    if (MovementUtils::try_slide_movement(curr_cells, next_cells, x, y, 0, max_slide, dirs)) {
+        return true;
     }
 
     // 4. No move was possible

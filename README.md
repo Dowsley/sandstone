@@ -44,7 +44,7 @@ cmake --build build
   - Friction (chance of moving solid sliding down)?
 - [ ] Data-driven approach
   - XML loading like in live-world-engine
-- [ ] No more raw pointers
+- [ ] No more raw pointers (complete refactor)
 - [ ] Better water behavior
   - Dispersion rate
 - [ ] Extremely basic UI

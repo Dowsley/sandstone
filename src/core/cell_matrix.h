@@ -35,7 +35,23 @@ public:
     void set_type(int x, int y, const ElementType *type);
     void set_color_variation_index(int x, int y, uint8_t color_variant_index);
 
-    bool within_bounds(int x, int y) const { return x >= 0 && x < _width && y >= 0 && y < _height; }
+    bool is_empty(int x, int y) const;
+    bool is_liquid(int x, int y) const;
+    bool is_immovable_solid(int x, int y) const;
+    bool is_movable_solid(int x, int y) const;
+    bool is_solid(int x, int y) const;
+    bool is_gas(int x, int y) const;
+
+    bool is_empty(const Vector2 &pos) const;
+    bool is_liquid(const Vector2 &pos) const;
+    bool is_immovable_solid(const Vector2 &pos) const;
+    bool is_movable_solid(const Vector2 &pos) const;
+    bool is_solid(const Vector2 &pos) const;
+    bool is_gas(const Vector2 &pos) const;
+
+
+    bool within_bounds(int x, int y) const;
+    bool within_bounds(const Vector2& pos) const;
 };
 
 
