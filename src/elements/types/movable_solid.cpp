@@ -8,6 +8,7 @@
 #include "../../utils/movement_utils.h"
 
 #include <random>
+#include "../../utils/random_utils.h"
 
 bool MovableSolid::step_particle_at(
     CellMatrix &curr_cells,
@@ -21,13 +22,9 @@ bool MovableSolid::step_particle_at(
         return MovementUtils::move_cell(curr_cells, next_cells, x, y, x, y + 1);
     }
 
-    // TODO: Better randomize this with a random util lib
     // Try diagonals, but only if the side cell is also empty or water (no squeezing)
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dist(0, 1);
     int dirs[2] = {-1, 1};
-    if (dist(gen)) std::swap(dirs[0], dirs[1]);
+    if (RandomUtils::coin_flip()) std::swap(dirs[0], dirs[1]);
 
     if (MovementUtils::try_solid_diagonal_movement(curr_cells, next_cells, x, y, dirs)) {
         return true;

@@ -5,6 +5,7 @@
 #include "element_type.h"
 #include "../core/cell_data.h"
 #include "../core/simulation.h"
+#include "../utils/random_utils.h"
 
 const std::string& ElementType::get_id() const { return _id; }
 const std::string& ElementType::get_description() const { return _description; }
@@ -14,8 +15,7 @@ const std::vector<Color>& ElementType::get_color_variants() const { return _colo
 
 const Color& ElementType::get_color(const int index) const { return _color_variants[index]; }
 
-// TODO: Better randomize this with a random util lib
-int ElementType::get_random_color_index() const { return rand() % _color_variants.size(); }
+int ElementType::get_random_color_index() const { return RandomUtils::index(static_cast<int>(_color_variants.size())); }
 
 ElementType* ElementType::set_id(const std::string &id) { this->_id = id; return this; }
 ElementType* ElementType::set_description(const std::string &description) { this->_description = description; return this; }

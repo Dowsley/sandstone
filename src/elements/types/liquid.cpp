@@ -6,8 +6,7 @@
 #include "../../core/cell_matrix.h"
 #include "../../utils/element_type_checker.h"
 #include "../../utils/movement_utils.h"
-
-#include <cstdlib>
+#include "../../utils/random_utils.h"
 
 bool Liquid::step_particle_at(
     CellMatrix &curr_cells,
@@ -19,13 +18,10 @@ bool Liquid::step_particle_at(
 
     constexpr int max_slide = 3;
     
-    // Truly randomize direction choice
+    // Randomize direction choice
     int dirs[2];
-    if (rand() % 2) {
-        dirs[0] = -1; dirs[1] = 1;  // Left first
-    } else {
-        dirs[0] = 1; dirs[1] = -1;  // Right first
-    }
+    if (RandomUtils::coin_flip()) { dirs[0] = -1; dirs[1] = 1; }
+    else { dirs[0] = 1; dirs[1] = -1; }
 
     // 1. Try to move down
     if (MovementUtils::try_move(curr_cells, next_cells, x, y, 0, 1)) {

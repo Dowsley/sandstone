@@ -43,7 +43,9 @@ add_executable(sandstone src/main.cpp
         src/utils/element_type_checker.cpp
         src/utils/element_type_checker.h
         src/utils/movement_utils.cpp
-        src/utils/movement_utils.h)
+        src/utils/movement_utils.h
+        src/utils/random_utils.cpp
+        src/utils/random_utils.h)
 target_link_libraries(sandstone PRIVATE raylib glfw)
 
 if(UNIX AND NOT APPLE)
