@@ -36,7 +36,7 @@ cmake --build build
 - [X] Main Application Class
 - [X] Better build system/dependency handler
 - [X] Basic Input handler
-- [ ] Gases
+- [X] Gases
 - [ ] Properties
   - [ ] Density
     - While I am at it, fix the teleporting water problem.
