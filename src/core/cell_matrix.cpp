@@ -4,12 +4,14 @@
 
 #include "cell_matrix.h"
 #include "../utils/element_type_checker.h"
+#include "../types/vector2i.h"
 
 CellMatrix::CellMatrix(const int width, const int height, const ElementRegistry &element_registry)
     : _width(width), _height(height)
 {
     _cells.resize(width * height,
         CellData { element_registry.get_type_by_id("EMPTY"), 0 });
+    _written_gen.assign(width * height, 0);
 }
 
 int CellMatrix::flatten_coords(const int x, const int y) const
@@ -79,7 +81,7 @@ void CellMatrix::set_type(const int x, const int y, const ElementType *type)
     _cells[idx].type = type;
 }
 
-void CellMatrix::set_color_variation_index(const int x, const int y, uint8_t color_variant_index)
+void CellMatrix::set_color_variation_index(const int x, const int y, const uint8_t color_variant_index)
 {
     const int idx = flatten_coords(x, y);
     _cells[idx].color_variant_index = color_variant_index;
@@ -121,32 +123,32 @@ bool CellMatrix::is_gas(const int x, const int y) const
     return ElementTypeChecker::is_gas(*dest_type);
 }
 
-bool CellMatrix::is_empty(const Vector2 &pos) const
+bool CellMatrix::is_empty(const Vector2I &pos) const
 {
     return is_empty(pos.x, pos.y);
 }
 
-bool CellMatrix::is_liquid(const Vector2 &pos) const
+bool CellMatrix::is_liquid(const Vector2I &pos) const
 {
     return is_liquid(pos.x, pos.y);
 }
 
-bool CellMatrix::is_immovable_solid(const Vector2 &pos) const
+bool CellMatrix::is_immovable_solid(const Vector2I &pos) const
 {
     return is_immovable_solid(pos.x, pos.y);
 }
 
-bool CellMatrix::is_movable_solid(const Vector2 &pos) const
+bool CellMatrix::is_movable_solid(const Vector2I &pos) const
 {
     return is_movable_solid(pos.x, pos.y);
 }
 
-bool CellMatrix::is_solid(const Vector2 &pos) const
+bool CellMatrix::is_solid(const Vector2I &pos) const
 {
     return is_solid(pos.x, pos.y);
 }
 
-bool CellMatrix::is_gas(const Vector2 &pos) const
+bool CellMatrix::is_gas(const Vector2I &pos) const
 {
     return is_gas(pos.x, pos.y);
 }
@@ -156,7 +158,31 @@ bool CellMatrix::within_bounds(const int x, const int y) const
     return x >= 0 && x < _width && y >= 0 && y < _height;
 }
 
-bool CellMatrix::within_bounds(const Vector2 &pos) const
+bool CellMatrix::within_bounds(const Vector2I &pos) const
 {
     return within_bounds(pos.x, pos.y);
+}
+
+void CellMatrix::begin_tick()
+{
+    // Increment generation; on wrap, reset to 1 and clear buffer
+    const uint8_t next = static_cast<uint8_t>(_gen + 1);
+    if (next == 0) {
+        _gen = 1;
+        std::ranges::fill(_written_gen, 0);
+    } else {
+        _gen = next;
+    }
+}
+
+bool CellMatrix::is_written(const int x, const int y) const
+{
+    const int idx = flatten_coords(x, y);
+    return _written_gen[idx] == _gen;
+}
+
+void CellMatrix::mark_written(const int x, const int y)
+{
+    const int idx = flatten_coords(x, y);
+    _written_gen[idx] = _gen;
 }

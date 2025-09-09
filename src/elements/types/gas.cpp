@@ -14,10 +14,8 @@ bool Gas::step_particle_at(
     CellMatrix &next_cells,
     const int x, const int y, const ElementType *type) const 
 {
-    // TODO: Consolidate shared logic between gas and liquid
-    if (next_cells.get_type(x, y) != curr_cells.get_type(x, y)) {
-        return false;
-    }
+    // Guard: do not process a cell whose output position has been claimed in next
+    if (next_cells.is_written(x, y)) return false;
 
     constexpr int max_dispersion = 4;
     

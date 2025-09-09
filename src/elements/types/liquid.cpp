@@ -14,10 +14,8 @@ bool Liquid::step_particle_at(
     CellMatrix &next_cells,
     const int x, const int y, const ElementType *type) const 
 {
-    // TODO: See better solution.
-    if (next_cells.get_type(x, y) != curr_cells.get_type(x, y)) {
+    if (next_cells.is_written(x, y))
         return false;
-    }
 
     constexpr int max_slide = 3;
     

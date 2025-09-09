@@ -10,12 +10,12 @@
 
 class ElementTypeChecker {
 public:
-    static bool is_empty(const ElementType& element);
-    static bool is_liquid(const ElementType& element);
-    static bool is_immovable_solid(const ElementType& element);
-    static bool is_movable_solid(const ElementType& element);
-    static bool is_solid(const ElementType& element);
-    static bool is_gas(const ElementType& element);
+    static bool is_empty(const ElementType& element) noexcept;
+    static bool is_liquid(const ElementType& element) noexcept;
+    static bool is_immovable_solid(const ElementType& element) noexcept;
+    static bool is_movable_solid(const ElementType& element) noexcept;
+    static bool is_solid(const ElementType& element) noexcept;
+    static bool is_gas(const ElementType& element) noexcept;
 };
 
 #endif //SANDSTONE_ELEMENT_UTIL_H

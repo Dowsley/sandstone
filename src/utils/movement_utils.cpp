@@ -15,9 +15,14 @@ bool MovementUtils::move_cell(
         return false;
     }
 
+    if (next_cells.is_written(dest_x, dest_y)) {
+        return false;
+    }
+
     const ElementType* dest_type = next_cells.get_type(dest_x, dest_y);
     next_cells.get(dest_x, dest_y) = curr_cells.get(src_x, src_y);
     next_cells.get(src_x, src_y) = { dest_type, 0, 0, 0 };
+    next_cells.mark_written(dest_x, dest_y);
     return true;
 }
 
@@ -66,8 +71,12 @@ bool MovementUtils::can_move_to(
     const int x, const int y,
     const bool allow_liquids)
 {
-    const auto pos = Vector2(x, y);
+    const auto pos = Vector2I(x, y);
     if (!next_cells.within_bounds(pos)) {
+        return false;
+    }
+
+    if (next_cells.is_written(x, y)) {
         return false;
     }
 

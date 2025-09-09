@@ -25,10 +25,10 @@ public:
 
     void step();
 
-    bool set_type_at(int x, int y, const ElementType *type, int colorIdx = -1);
-    bool set_type_at(const Vector2I &pos, const ElementType *type, int colorIdx = -1);
-    bool set_type_at(int x, int y, const std::string &id, int colorIdx = -1);
-    bool set_type_at(const Vector2I &pos,  const std::string &id, int colorIdx = -1);
+    bool set_type_at(int x, int y, const ElementType *type, int color_idx = -1);
+    bool set_type_at(const Vector2I &pos, const ElementType *type, int color_idx = -1);
+    bool set_type_at(int x, int y, const std::string &id, int color_idx = -1);
+    bool set_type_at(const Vector2I &pos,  const std::string &id, int color_idx = -1);
     const ElementType* get_type_at(int x, int y) const;
     const ElementType* get_type_at(const Vector2I &pos) const;
     void fill_render_buffer(Color *dst) const;

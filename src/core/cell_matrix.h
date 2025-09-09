@@ -15,6 +15,9 @@ class CellMatrix {
 private:
     std::vector<CellData> _cells;
     int _width, _height;
+    // Generation-stamped write mask
+    std::vector<uint8_t> _written_gen;
+    uint8_t _gen = 1;
 public:
     CellMatrix() : _width(0), _height(0) {}
     CellMatrix(int width, int height, const ElementRegistry &element_registry);
@@ -42,16 +45,21 @@ public:
     bool is_solid(int x, int y) const;
     bool is_gas(int x, int y) const;
 
-    bool is_empty(const Vector2 &pos) const;
-    bool is_liquid(const Vector2 &pos) const;
-    bool is_immovable_solid(const Vector2 &pos) const;
-    bool is_movable_solid(const Vector2 &pos) const;
-    bool is_solid(const Vector2 &pos) const;
-    bool is_gas(const Vector2 &pos) const;
+    bool is_empty(const Vector2I &pos) const;
+    bool is_liquid(const Vector2I &pos) const;
+    bool is_immovable_solid(const Vector2I &pos) const;
+    bool is_movable_solid(const Vector2I &pos) const;
+    bool is_solid(const Vector2I &pos) const;
+    bool is_gas(const Vector2I &pos) const;
 
 
     bool within_bounds(int x, int y) const;
-    bool within_bounds(const Vector2& pos) const;
+    bool within_bounds(const Vector2I& pos) const;
+
+    // Write-mask API (generation-stamped; increment per tick)
+    void begin_tick();
+    bool is_written(int x, int y) const;
+    void mark_written(int x, int y);
 };
 
 

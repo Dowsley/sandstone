@@ -17,6 +17,7 @@ Simulation::Simulation(const Vector2I &size, ElementRegistry& element_registry)
 void Simulation::step()
 {
     _next_cells = _cells;
+    _next_cells.begin_tick();
     
     // Alternate scan direction each frame to reduce processing order bias
     const bool scan_left_to_right = (_step_count % 2) == 0;
@@ -44,31 +45,31 @@ void Simulation::step()
 }
 
 bool Simulation::set_type_at(const int x, const int y,
-    const ElementType *type, const int colorIdx)
+    const ElementType *type, const int color_idx)
 {
     if (!is_pos_within_bounds(x, y))
         return false;
 
     _cells.get(x, y).type = type;
-    if (colorIdx > -1)
-        _cells.set_color_variation_index(x, y, colorIdx);
+    if (color_idx > -1)
+        _cells.set_color_variation_index(x, y, color_idx);
     return true;
 }
 
-bool Simulation::set_type_at(const Vector2I &pos, const ElementType *type, int colorIdx)
+bool Simulation::set_type_at(const Vector2I &pos, const ElementType *type, const int color_idx)
 {
-    return set_type_at(pos.x, pos.y, type, colorIdx);
+    return set_type_at(pos.x, pos.y, type, color_idx);
 }
 
 bool Simulation::set_type_at(const int x, const int y,
-                             const std::string &id, const int colorIdx)
+                             const std::string &id, const int color_idx)
 {
-    return set_type_at(x, y, _element_registry.get_type_by_id(id), colorIdx);
+    return set_type_at(x, y, _element_registry.get_type_by_id(id), color_idx);
 }
 
-bool Simulation::set_type_at(const Vector2I &pos, const std::string &id, int colorIdx)
+bool Simulation::set_type_at(const Vector2I &pos, const std::string &id, const int color_idx)
 {
-    return set_type_at(pos, _element_registry.get_type_by_id(id), colorIdx);
+    return set_type_at(pos, _element_registry.get_type_by_id(id), color_idx);
 }
 
 const ElementType* Simulation::get_type_at(const int x, const int y) const
