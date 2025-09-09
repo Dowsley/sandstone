@@ -45,6 +45,35 @@ struct InputCodeHash {
 };
 
 /**
+ * @brief Represents a state for a given set of Input Codes.
+ */
+class InputState {
+public:
+    using SetType = std::unordered_set<InputCode, InputCodeHash>;
+
+    InputState() = default;
+
+    template <typename It>
+    InputState(It first, It last) : _inputs(first, last) {}
+
+    bool contains(const InputCode &input) const { return _inputs.contains(input); }
+    void insert(const InputCode &input) { _inputs.insert(input); }
+
+    template <typename It>
+    void insert(It first, It last) { _inputs.insert(first, last); }
+
+    void clear() { _inputs.clear(); }
+
+    SetType::const_iterator begin() const { return _inputs.begin(); }
+    SetType::const_iterator end() const { return _inputs.end(); }
+    SetType::iterator begin() { return _inputs.begin(); }
+    SetType::iterator end() { return _inputs.end(); }
+
+private:
+    SetType _inputs;
+};
+
+/**
  * @brief Handles inputs for RayLib in the same style as Godot's Input class, based on named actions.
  * 
  * @see https://www.raylib.com/cheatsheet/cheatsheet.html
@@ -52,10 +81,9 @@ struct InputCodeHash {
 class InputSystem
 {
 private:
-    // TODO: Wrap these unordered sets into a "State" type
-    std::unordered_map<std::string, std::unordered_set<InputCode, InputCodeHash>> _actions;
-    std::unordered_set<InputCode, InputCodeHash> _previous_input_state;
-    std::unordered_set<InputCode, InputCodeHash> _current_input_state;
+    std::unordered_map<std::string, InputState> _actions;
+    InputState _previous_input_state;
+    InputState _current_input_state;
 
     // Cache of all inputs referenced by any action
     std::unordered_set<InputCode, InputCodeHash> _watched_inputs;
@@ -109,7 +137,7 @@ public:
      * @param name Name of the action to query
      * @return The inputs if the action exists; otherwise, std::nullopt
      */
-    std::optional<std::unordered_set<InputCode, InputCodeHash>> get_inputs_from_action(
+    std::optional<std::reference_wrapper<const InputState>> get_inputs_from_action(
         const std::string &name) const;
 
     /**

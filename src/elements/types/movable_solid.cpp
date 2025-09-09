@@ -14,6 +14,8 @@ bool MovableSolid::step_particle_at(
     CellMatrix &next_cells,
     const int x, const int y, const ElementType *type) const
 {
+    // TODO: This is not sinking over gas. Fix it. Make density feature while Im at it.
+    
     // Try to move down (can fall through liquids)
     if (MovementUtils::can_move_to(next_cells, x, y + 1, true)) {
         return MovementUtils::move_cell(curr_cells, next_cells, x, y, x, y + 1);
