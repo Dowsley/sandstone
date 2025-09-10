@@ -4,7 +4,9 @@
 
 #include "movement_utils.h"
 #include "element_type_checker.h"
- #include "../elements/element_type.h"
+#include "../elements/element_type.h"
+#include "../core/cell_matrix.h"
+#include "../core/cell_data.h"
 
 bool MovementUtils::move_cell(
     CellMatrix &curr_cells,

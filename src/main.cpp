@@ -103,7 +103,23 @@ private:
             0.0f,
             WHITE
         );
+        draw_overlay();
         EndDrawing();
+    }
+
+    void draw_overlay() const
+    {
+        constexpr int margin = 8;
+        constexpr int font_size = 5 * RES_SCALE;
+        
+        const std::string &current_type_id = _type_ids[_current_type_idx];
+        const std::string type_label = "Element: " + current_type_id;
+        DrawText(type_label.c_str(), margin + 1, margin + 1, font_size, BLACK);
+        DrawText(type_label.c_str(), margin, margin, font_size, WHITE);
+
+        const std::string size_label = "Brush Size: " + std::to_string(_brush_size);;
+        DrawText(size_label.c_str(), margin + 1, margin + font_size + 2, font_size, BLACK);
+        DrawText(size_label.c_str(), margin, margin+font_size+1, font_size, WHITE);
     }
 
     void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)

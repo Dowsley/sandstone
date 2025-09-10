@@ -38,6 +38,11 @@ cmake --build build
 - [X] Basic Input handler
 - [X] Gases
 - [X] Density
+- [X] Basic text on UI
+- [ ] Controls expanded
+  - [ ] Q and E to switch elements
+  - [ ] Scroll wheel to switch between elements
+  - [ ] RMB as eraser
 - [ ] Friction
   - (chance of moving solid sliding down)
 - [ ] Data-driven approach
