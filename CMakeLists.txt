@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(raylib CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
+find_package(pugixml CONFIG REQUIRED)
 
 add_executable(sandstone src/main.cpp
         src/core/simulation.cpp
@@ -46,7 +47,14 @@ add_executable(sandstone src/main.cpp
         src/utils/movement_utils.h
         src/utils/random_utils.cpp
         src/utils/random_utils.h)
-target_link_libraries(sandstone PRIVATE raylib glfw)
+target_link_libraries(sandstone PRIVATE raylib glfw pugixml::pugixml)
+
+# Copy data directory to build dir
+add_custom_command(TARGET sandstone POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:sandstone>/data/elements
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/data
+            $<TARGET_FILE_DIR:sandstone>/data)
 
 if(UNIX AND NOT APPLE)
     target_link_libraries(sandstone PRIVATE m pthread dl rt X11)

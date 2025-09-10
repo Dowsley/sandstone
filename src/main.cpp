@@ -3,6 +3,7 @@
 #include <cstring>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "core/simulation.h"
 #include "systems/input_system.h"
@@ -30,7 +31,9 @@ public:
             VIRTUAL_WIDTH, VIRTUAL_HEIGHT,
             WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        for (const auto* type : _sim.get_all_element_types()) {
+        _sim = std::make_unique<Simulation>(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, _element_registry);
+
+        for (const auto* type : _sim->get_all_element_types()) {
             if (type->get_id() != "EMPTY") {
                 _type_ids.push_back(type->get_id());
             }
@@ -56,8 +59,8 @@ public:
     {
         while (!WindowShouldClose()) {
             handle_input();
-            _sim.step();
-            _sim.fill_render_buffer(_graphics.pixels);
+            _sim->step();
+            _sim->fill_render_buffer(_graphics.pixels);
             draw_frame();
         }
         
@@ -69,8 +72,14 @@ public:
 private:
     Graphics _graphics;
     
-    ElementRegistry _element_registry { "WHATEVER FOR NOW" };
-    Simulation _sim { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, _element_registry };
+    ElementRegistry _element_registry { []{
+        std::string p = "data/elements";
+#ifdef SANDSTONE_DATA_DIR
+        p = std::string(SANDSTONE_DATA_DIR) + "/elements";
+#endif
+        return p;
+    }() };
+    std::unique_ptr<Simulation> _sim;
     InputSystem _input;
     
     uint _brush_size = 5;
@@ -209,22 +218,22 @@ private:
         }
     }
 
-    void draw_square(const Vector2I &pos, const std::string &type_id, const int half_extent)
+    void draw_square(const Vector2I &pos, const std::string &type_id, const int half_extent) const
     {
-        const auto type = _sim.get_type_by_id(type_id);
+        const auto type = _sim->get_type_by_id(type_id);
         const bool erase = (type_id == "EMPTY");
         for (int x = pos.x - half_extent; x <= pos.x + half_extent; ++x) {
             for (int y = pos.y - half_extent; y <= pos.y + half_extent; ++y) {
-                if (erase || _sim.is_pos_empty(x, y)) {
-                    _sim.set_type_at(x, y, type, type->get_random_color_index());
+                if (erase || _sim->is_pos_empty(x, y)) {
+                    _sim->set_type_at(x, y, type, type->get_random_color_index());
                 }
             }
         }
     }
 
-    void draw_round(const Vector2I &pos, const std::string &type_id, const int radius)
+    void draw_round(const Vector2I &pos, const std::string &type_id, const int radius) const
     {
-        const auto type = _sim.get_type_by_id(type_id);
+        const auto type = _sim->get_type_by_id(type_id);
         const bool erase = (type_id == "EMPTY");
         const int r2 = radius * radius;
         for (int dx = -radius; dx <= radius; ++dx) {
@@ -232,17 +241,17 @@ private:
                 if (dx*dx + dy*dy <= r2) {
                     const int x = pos.x + dx;
                     const int y = pos.y + dy;
-                    if (erase || _sim.is_pos_empty(x, y)) {
-                        _sim.set_type_at(x, y, type, type->get_random_color_index());
+                    if (erase || _sim->is_pos_empty(x, y)) {
+                        _sim->set_type_at(x, y, type, type->get_random_color_index());
                     }
                 }
             }
         }
     }
 
-    void draw_spray(const Vector2I &pos, const std::string &type_id, const int radius)
+    void draw_spray(const Vector2I &pos, const std::string &type_id, const int radius) const
     {
-        const auto type = _sim.get_type_by_id(type_id);
+        const auto type = _sim->get_type_by_id(type_id);
         const bool erase = (type_id == "EMPTY");
         constexpr int coverage = 15; // percent
         const int r2 = radius * radius;
@@ -252,8 +261,8 @@ private:
                     if (RandomUtils::uniform_int(0, 99) < coverage) {
                         const int x = pos.x + dx;
                         const int y = pos.y + dy;
-                        if (erase || _sim.is_pos_empty(x, y)) {
-                            _sim.set_type_at(x, y, type, type->get_random_color_index());
+                        if (erase || _sim->is_pos_empty(x, y)) {
+                            _sim->set_type_at(x, y, type, type->get_random_color_index());
                         }
                     }
                 }
@@ -261,7 +270,7 @@ private:
         }
     }
 
-    void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
+    void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0) const
     {
         switch (_brush_shape) {
             case BrushShape::square:

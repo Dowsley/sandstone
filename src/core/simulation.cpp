@@ -1,12 +1,11 @@
 #include "simulation.h"
-#include <utility> // For std::move
+#include <utility>
 
 Simulation::Simulation(const int width, const int height, ElementRegistry& element_registry)
     : _element_registry(element_registry)
 {
     _width = width;
     _height = height;
-    _element_registry.initialize();
     _cells = CellMatrix(width, height, _element_registry);
     _next_cells = CellMatrix(width, height, _element_registry);
 }

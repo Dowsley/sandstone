@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Element id="METAL" name="Metal" kind="ImmovableSolid" density="3000">
+  <Description>Heavy, immovable block.</Description>
+  <Color r="180" g="180" b="190" a="255"/>
+  <Color r="160" g="160" b="170" a="255"/>
+</Element>
+

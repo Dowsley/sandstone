@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Falling sand simulation using Raylib",
   "dependencies": [
-    "raylib"
+    "raylib",
+    "pugixml"
   ]
 }

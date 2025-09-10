@@ -25,7 +25,7 @@ cmake --build build
 ./build/sandstone
 ```
 
-## TODO
+## Main Features
 - [X] Basic sim
 - [X] Rewrite on better design pattern
   - [X] Hierarchy of elements
@@ -44,16 +44,20 @@ cmake --build build
   - [X] Scroll wheel to change brush size
   - [X] RMB as eraser
   - [X] Tab to switch between brush shapes (show this mode as text on screen)
-- [ ] Friction
-  - (chance of moving solid sliding down)
-- [ ] Data-driven approach
+- [X] Data-driven approach
   - XML loading like in live-world-engine
-- [ ] No more raw pointers (complete refactor)
-- [ ] Better water behavior
-  - Dispersion rate
+- [ ] Friction
+  - (chance of movable_solid sliding down)
 - [ ] Extremely basic UI
   - [ ] Element chooser (from list)
   - [ ] Brush visualization
 - [ ] Particle System
 - [ ] Rigid Body System
 - [ ] Temperatures
+- [ ] Lazy Squares
+- [ ] Chunking
+- [ ] Camera
+
+## Improvements
+- [ ] Better water behavior (dispersion rate)
+- [ ] No more raw pointers (complete refactor)

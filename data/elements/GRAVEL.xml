@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Element id="GRAVEL" name="Gravel" kind="MovableSolid" density="120">
+  <Description>Small stones that are heavier than sand.</Description>
+  <Color r="130" g="120" b="110" a="255"/>
+  <Color r="110" g="100" b="90" a="255"/>
+  <Color r="140" g="130" b="120" a="255"/>
+</Element>
+

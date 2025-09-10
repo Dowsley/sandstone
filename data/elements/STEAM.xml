@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Element id="STEAM" name="Steam" kind="Gas" density="1">
+  <Description>This is the steam element.</Description>
+  <Color r="127" g="127" b="127" a="255"/>
+</Element>
+

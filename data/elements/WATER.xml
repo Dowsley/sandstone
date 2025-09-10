@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Element id="WATER" name="Water" kind="Liquid" density="30">
+  <Description>This is the water element.</Description>
+  <Color r="15" g="93" b="226" a="255"/>
+</Element>
+

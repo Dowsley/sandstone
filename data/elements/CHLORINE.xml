@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Element id="CHLORINE" name="Chlorine" kind="Gas" density="8">
+  <Description>Heavier-than-air gas that tends to sink.</Description>
+  <Color r="120" g="200" b="80" a="200"/>
+</Element>
+

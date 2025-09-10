@@ -4,60 +4,87 @@
 
 #include "element_loader.h"
 #include <vector>
+#include <string>
+#include <pugixml.hpp>
+#include <filesystem>
+#include "types/liquid.h"
+#include "types/movable_solid.h"
+#include "types/immovable_solid.h"
+#include "types/gas.h"
+#include "empty.h"
 
-// TileType* TileLoader::_loadSpecific(const std::string &tileFile) {
-//     tinyxml2::XMLDocument doc;
-//     if (doc.LoadFile(tileFile.c_str()) != tinyxml2::XML_SUCCESS) {
-//         std::string errorString = doc.ErrorStr();
-//         throw std::runtime_error("Failed to load tile file: " + tileFile + ". Error: " + errorString);
-//     }
-//
-//     /* General Info  */
-//     auto *tileType = new TileType();
-//     tinyxml2::XMLElement *tileElem = doc.FirstChildElement("TILE");
-//     tileType
-//         ->SetID(tileElem->Attribute("id"))
-//         ->SetDescription(tileElem->FirstChildElement("DESCRIPTION")->GetText())
-//         ->SetMaxHealth(tileElem->FirstChildElement("MAX_HEALTH")->IntText())
-//         ->SetName(tileElem->FirstChildElement("NAME")->Attribute("singular"));
-//
-//     if (tileElem->FirstChildElement("SOLID") != nullptr) {
-//         tileType->SetIsSolid();
-//     }
-//
-//     std::vector<Vec2> spritePositions;
-//     std::vector<Color> spriteColors;
-//
-//     // Extract sprite positions
-//     tinyxml2::XMLElement *spriteElem = tileElem->FirstChildElement("SPRITE");
-//     while (spriteElem != nullptr) {
-//         spritePositions.emplace_back(spriteElem->IntAttribute("x"), spriteElem->IntAttribute("y"));
-//         spriteElem = spriteElem->NextSiblingElement("SPRITE");
-//     }
-//
-//     // Extract sprite colors
-//     tinyxml2::XMLElement *colorElem = tileElem->FirstChildElement("COLOR");
-//     while (colorElem != nullptr) {
-//         spriteColors.emplace_back(colorElem->IntAttribute("r"), colorElem->IntAttribute("g"), colorElem->IntAttribute("b"));
-//         colorElem = colorElem->NextSiblingElement("COLOR");
-//     }
-//
-//     // Combine sprite positions and colors and store them
-//     for (const Vec2 &pos : spritePositions) {
-//         for (const Color &col : spriteColors) {
-//             tileType->AddSpriteVariant(SpriteVariant(pos, col));
-//         }
-//     }
-//
-//     return tileType;
-// }
-
-ElementType* ElementLoader::_load_specific(const std::string &tileFile) {
-    // TODO: Implement actual loading logic
+static ElementType* create_by_kind(const std::string &kind)
+{
+    if (kind == "Empty") return new Empty();
+    if (kind == "Liquid") return new Liquid();
+    if (kind == "MovableSolid") return new MovableSolid();
+    if (kind == "ImmovableSolid") return new ImmovableSolid();
+    if (kind == "Gas") return new Gas();
     return nullptr;
 }
 
+static unsigned char to_u8(const int v, const int def = 0)
+{
+    int x = v;
+    if (x < 0) x = def;
+    if (x > 255) x = 255;
+    return static_cast<unsigned char>(x);
+}
+
+ElementType* ElementLoader::_load_specific(const std::string &file) {
+    pugi::xml_document doc;
+    const pugi::xml_parse_result ok = doc.load_file(file.c_str());
+    if (!ok) return nullptr;
+
+    const pugi::xml_node n = doc.child("Element");
+    if (!n) return nullptr;
+
+    const char* id_c   = n.attribute("id").as_string(nullptr);
+    const char* name_c = n.attribute("name").as_string(nullptr);
+    const char* kind_c = n.attribute("kind").as_string(nullptr);
+    const int density  = n.attribute("density").as_int(0);
+    if (!id_c || !name_c || !kind_c) return nullptr;
+
+    ElementType* t = create_by_kind(kind_c);
+    if (!t) return nullptr;
+
+    const char* desc_c = n.child("Description").text().as_string("");
+    t->set_id(id_c)
+     ->set_name(name_c)
+     ->set_description(desc_c)
+     ->set_density(density);
+
+    for (const pugi::xml_node c : n.children("Color")) {
+        Color col {
+            to_u8(c.attribute("r").as_int(0)),
+            to_u8(c.attribute("g").as_int(0)),
+            to_u8(c.attribute("b").as_int(0)),
+            to_u8(c.attribute("a").as_int(255))
+        };
+        t->add_color_variant(col);
+    }
+
+    return t;
+}
+
 std::vector<ElementType*> ElementLoader::load_all() {
-    // TODO: Implement actual loading logic
-    return {};
+    std::vector<ElementType*> out;
+
+    std::error_code ec;
+    const std::filesystem::path dir(_directory_path);
+    if (!std::filesystem::exists(dir, ec)) return out;
+    if (!std::filesystem::is_directory(dir, ec)) return out;
+
+    for (const auto &entry : std::filesystem::directory_iterator(dir, ec)) {
+        if (ec) break;
+        if (!entry.is_regular_file()) continue;
+        const auto &path = entry.path();
+        if (path.extension() != ".xml") continue;
+
+        if (ElementType* t = _load_specific(path.string())) {
+            out.push_back(t);
+        }
+    }
+
+    return out;
 }

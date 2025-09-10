@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Element id="SAND" name="Sand" kind="MovableSolid" density="100">
+  <Description>This is the sand element.</Description>
+  <Color r="238" g="221" b="126" a="255"/>
+  <Color r="222" g="205" b="111" a="255"/>
+  <Color r="232" g="215" b="121" a="255"/>
+  <Color r="230" g="213" b="119" a="255"/>
+  <Color r="221" g="204" b="110" a="255"/>
+  <Color r="241" g="224" b="129" a="255"/>
+</Element>
+
