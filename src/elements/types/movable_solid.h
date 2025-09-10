@@ -11,6 +11,8 @@ class Simulation;
 
 class MovableSolid final : public Solid {
 public:
+    MovableSolid();
+public:
     bool step_particle_at(
         CellMatrix &curr_cells,
         CellMatrix &next_cells,

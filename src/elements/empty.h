@@ -10,6 +10,7 @@ class Simulation;
 
 class Empty final : public ElementType {
 public:
+    Empty() { _kind = ElementKind::Empty; }
     bool step_particle_at(
         CellMatrix &curr_cells,
         CellMatrix &next_cells,

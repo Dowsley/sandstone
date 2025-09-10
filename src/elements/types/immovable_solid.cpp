@@ -4,6 +4,11 @@
 
 #include "immovable_solid.h"
 
+ImmovableSolid::ImmovableSolid()
+{
+    _kind = ElementKind::ImmovableSolid;
+}
+
 bool ImmovableSolid::step_particle_at(
     CellMatrix &curr_cells,
     CellMatrix &next_cells,

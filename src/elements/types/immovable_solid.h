@@ -11,6 +11,8 @@ class Simulation;
 
 class ImmovableSolid final : public Solid {
 public:
+    ImmovableSolid();
+public:
     bool step_particle_at(
         CellMatrix &curr_cells,
         CellMatrix &next_cells,

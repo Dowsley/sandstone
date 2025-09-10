@@ -58,3 +58,8 @@ bool Gas::step_particle_at(
     next_cells.get(x, y) = curr_cells.get(x, y);
     return false;
 }
+
+Gas::Gas()
+{
+    _kind = ElementKind::Gas;
+}

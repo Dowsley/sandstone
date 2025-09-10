@@ -93,34 +93,16 @@ bool CellMatrix::is_empty(const int x, const int y) const
     return ElementTypeChecker::is_empty(*dest_type);
 }
 
-bool CellMatrix::is_liquid(const int x, const int y) const
+bool CellMatrix::is_of_kind(const int x, const int y, const ElementKind kind) const
 {
     const ElementType *dest_type = get_type(x, y);
-    return ElementTypeChecker::is_liquid(*dest_type);
+    return ElementTypeChecker::is_of_kind(*dest_type, kind);
 }
 
-bool CellMatrix::is_immovable_solid(const int x, const int y) const
+bool CellMatrix::is_of_kinds(const int x, const int y, const std::initializer_list<ElementKind> kinds) const
 {
     const ElementType *dest_type = get_type(x, y);
-    return ElementTypeChecker::is_immovable_solid(*dest_type);
-}
-
-bool CellMatrix::is_movable_solid(const int x, const int y) const
-{
-    const ElementType *dest_type = get_type(x, y);
-    return ElementTypeChecker::is_movable_solid(*dest_type);
-}
-
-bool CellMatrix::is_solid(const int x, const int y) const
-{
-    const ElementType *dest_type = get_type(x, y);
-    return ElementTypeChecker::is_solid(*dest_type);
-}
-
-bool CellMatrix::is_gas(const int x, const int y) const
-{
-    const ElementType *dest_type = get_type(x, y);
-    return ElementTypeChecker::is_gas(*dest_type);
+    return ElementTypeChecker::is_of_kinds(*dest_type, kinds);
 }
 
 bool CellMatrix::is_empty(const Vector2I &pos) const
@@ -128,29 +110,14 @@ bool CellMatrix::is_empty(const Vector2I &pos) const
     return is_empty(pos.x, pos.y);
 }
 
-bool CellMatrix::is_liquid(const Vector2I &pos) const
+bool CellMatrix::is_of_kind(const Vector2I &pos, const ElementKind kind) const
 {
-    return is_liquid(pos.x, pos.y);
+    return is_of_kind(pos.x, pos.y, kind);
 }
 
-bool CellMatrix::is_immovable_solid(const Vector2I &pos) const
+bool CellMatrix::is_of_kinds(const Vector2I &pos, const std::initializer_list<ElementKind> kinds) const
 {
-    return is_immovable_solid(pos.x, pos.y);
-}
-
-bool CellMatrix::is_movable_solid(const Vector2I &pos) const
-{
-    return is_movable_solid(pos.x, pos.y);
-}
-
-bool CellMatrix::is_solid(const Vector2I &pos) const
-{
-    return is_solid(pos.x, pos.y);
-}
-
-bool CellMatrix::is_gas(const Vector2I &pos) const
-{
-    return is_gas(pos.x, pos.y);
+    return is_of_kinds(pos.x, pos.y, kinds);
 }
 
 bool CellMatrix::within_bounds(const int x, const int y) const

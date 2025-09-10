@@ -9,6 +9,11 @@
 #include <random>
 #include "../../utils/random_utils.h"
 
+MovableSolid::MovableSolid()
+{
+    _kind = ElementKind::MovableSolid;
+}
+
 bool MovableSolid::step_particle_at(
     CellMatrix &curr_cells,
     CellMatrix &next_cells,

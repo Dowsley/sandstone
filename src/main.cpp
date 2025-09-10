@@ -75,7 +75,7 @@ private:
     
     uint _brush_size = 5;
     enum class BrushShape { square = 0, round = 1, spray = 2 };
-    BrushShape _brush_shape = BrushShape::spray;
+    BrushShape _brush_shape = BrushShape::round;
     std::vector<std::string> _type_ids;
     size_t _current_type_idx = 0;
     
@@ -131,6 +131,15 @@ private:
         constexpr int margin = 8;
         constexpr int font_size = 5 * RES_SCALE;
         constexpr int pad = 1;
+
+        // Top-right FPS counter
+        const int fps = GetFPS();
+        const std::string fps_label = "FPS: " + std::to_string(fps);
+        const int fps_width = MeasureText(fps_label.c_str(), font_size);
+        const int fps_x = WINDOW_WIDTH - margin - fps_width;
+        const int fps_y = margin;
+        DrawText(fps_label.c_str(), fps_x + 1, fps_y + 1, font_size, BLACK);
+        DrawText(fps_label.c_str(), fps_x, fps_y, font_size, WHITE);
 
         Vector2I pos = { margin, margin };
 
@@ -298,9 +307,9 @@ private:
         const float wheel = _input.get_mouse_scroll_delta();
         constexpr float tolerance = 0.01f;
         if (wheel > tolerance) {
-            increase_brush_size();
-        } else if (wheel < -tolerance) {
             decrease_brush_size();
+        } else if (wheel < -tolerance) {
+            increase_brush_size();
         }
     }
 };

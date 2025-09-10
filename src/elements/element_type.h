@@ -13,6 +13,15 @@
 
 class CellMatrix;
 
+enum class ElementKind {
+    Unknown = 0,
+    Empty,
+    Liquid,
+    MovableSolid,
+    ImmovableSolid,
+    Gas
+};
+
 class ElementType {
 protected:
     std::string _id;
@@ -20,6 +29,7 @@ protected:
     std::string _description;
     int _density = 0;
     std::vector<Color> _color_variants;
+    ElementKind _kind = ElementKind::Unknown;
 
 public:
     virtual ~ElementType() = default;
@@ -28,6 +38,7 @@ public:
     const std::string& get_description() const;
     int get_density() const;
     const std::vector<Color>& get_color_variants() const;
+    ElementKind get_kind() const { return _kind; }
 
     const Color& get_color(int index) const;
     int get_random_color_index() const;
@@ -38,6 +49,7 @@ public:
     ElementType* set_name(const std::string &name);
     ElementType* set_density(int density);
     ElementType* add_color_variant(const Color &colorVariant);
+    ElementType* set_kind(ElementKind kind) { _kind = kind; return this; }
 
     virtual bool step_particle_at(
        CellMatrix &curr_cells,

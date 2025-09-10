@@ -69,17 +69,17 @@ std::vector<ElementType*> ElementRegistry::_load_specific() {
         ->set_id("WATER")
         ->set_name("Water")
         ->set_description("This is the water element.")
-        ->set_density(50)
+        ->set_density(30)
         // ->add_color_variant({ 60,128,242, 255 });
         ->add_color_variant({ 15,93,226, 255 });
         // ->add_color_variant({ 117, 164, 246, 255 });
     elements.push_back(water);
 
     const auto oil = (new Liquid())
-        ->set_id("OIL")
-        ->set_name("Oil")
-        ->set_description("Viscous liquid lighter than water.")
-        ->set_density(30)
+        ->set_id("SLUDGE")
+        ->set_name("Sludge")
+        ->set_description("Viscous liquid heavier than water.")
+        ->set_density(50)
         ->add_color_variant({ 60, 50, 20, 255 })
         ->add_color_variant({ 70, 55, 25, 255 });
     elements.push_back(oil);

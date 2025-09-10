@@ -48,11 +48,11 @@ bool MovementUtils::can_displace(
     if (!src || !dst) return false;
 
     // Immovable solid at destination: never displace
-    if (ElementTypeChecker::is_immovable_solid(*dst))
+    if (ElementTypeChecker::is_of_kind(*dst, ElementKind::ImmovableSolid))
         return false;
 
     // Source immovable: it shouldn't be trying to move anyway
-    if (ElementTypeChecker::is_immovable_solid(*src))
+    if (ElementTypeChecker::is_of_kind(*src, ElementKind::ImmovableSolid))
         return false;
 
     const int dy = ny - y;

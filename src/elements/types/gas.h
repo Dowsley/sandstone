@@ -10,6 +10,8 @@
 class Gas final : public ElementType
 {
 public:
+    Gas();
+public:
     bool step_particle_at(
         CellMatrix &curr_cells,
         CellMatrix &next_cells,

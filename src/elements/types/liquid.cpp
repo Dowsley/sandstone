@@ -8,6 +8,11 @@
 #include "../../utils/movement_utils.h"
 #include "../../utils/random_utils.h"
 
+Liquid::Liquid()
+{
+    _kind = ElementKind::Liquid;
+}
+
 bool Liquid::step_particle_at(
     CellMatrix &curr_cells,
     CellMatrix &next_cells,

@@ -3,38 +3,23 @@
 //
 
 #include "element_type_checker.h"
-
-#include "../elements/types/liquid.h"
-#include "../elements/types/immovable_solid.h"
-#include "../elements/types/movable_solid.h"
-#include "../elements/types/gas.h"
+#include "../elements/element_type.h"
 
 bool ElementTypeChecker::is_empty(const ElementType &element) noexcept
 {
-    return element.get_id() == "EMPTY";
+    return element.get_kind() == ElementKind::Empty;
 }
 
-bool ElementTypeChecker::is_liquid(const ElementType &element) noexcept
+bool ElementTypeChecker::is_of_kind(const ElementType &element, const ElementKind kind) noexcept
 {
-    return dynamic_cast<const Liquid*>(&element) != nullptr;
+    return element.get_kind() == kind;
 }
 
-bool ElementTypeChecker::is_immovable_solid(const ElementType &element) noexcept
+bool ElementTypeChecker::is_of_kinds(const ElementType &element, const std::initializer_list<ElementKind> kinds) noexcept
 {
-    return dynamic_cast<const ImmovableSolid*>(&element) != nullptr;
-}
-
-bool ElementTypeChecker::is_movable_solid(const ElementType &element) noexcept
-{
-    return dynamic_cast<const MovableSolid*>(&element) != nullptr;
-}
-
-bool ElementTypeChecker::is_solid(const ElementType &element) noexcept
-{
-    return is_immovable_solid(element) || is_movable_solid(element);
-}
-
-bool ElementTypeChecker::is_gas(const ElementType &element) noexcept
-{
-    return dynamic_cast<const Gas*>(&element) != nullptr;
+    const ElementKind k = element.get_kind();
+    for (const auto kk : kinds) {
+        if (kk == k) return true;
+    }
+    return false;
 }

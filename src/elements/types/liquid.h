@@ -9,12 +9,13 @@
 
 class Liquid final : public ElementType
 {
+public:
+    Liquid();
 protected:
     int _boiling_point = 0;
     int _freezing_point = 0;
     // int _viscosity = 0; // TODO: Consider how to implement this. Maybe only processing every N frames or so?!
 
-public:
     bool step_particle_at(
         CellMatrix &curr_cells,
         CellMatrix &next_cells,
