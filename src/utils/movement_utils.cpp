@@ -7,6 +7,7 @@
 #include "../elements/element_type.h"
 #include "../core/cell_matrix.h"
 #include "../core/cell_data.h"
+#include "../utils/random_utils.h"
 
 bool MovementUtils::move_cell(
     CellMatrix &curr_cells,
@@ -66,8 +67,9 @@ bool MovementUtils::can_displace(
     }
     
     // lateral
-    // conservative: only displace EMPTY on lateral moves
-    return ElementTypeChecker::is_empty(*dst);
+    // Allow moving into EMPTY, or displace when source is denser than destination
+    if (ElementTypeChecker::is_empty(*dst)) return true;
+    return s > d;
 }
 
 bool MovementUtils::swap_or_move(
@@ -113,6 +115,27 @@ bool MovementUtils::try_move(
     if (!curr_cells.within_bounds(dest_x, dest_y)) return false;
     if (!can_displace(curr_cells, next_cells, x, y, dest_x, dest_y)) return false;
     return swap_or_move(curr_cells, next_cells, x, y, dest_x, dest_y);
+}
+
+bool MovementUtils::try_lateral_wiggle(
+    CellMatrix &curr_cells,
+    CellMatrix &next_cells,
+    const int x, const int y,
+    const int dirs[2])
+{
+    // Gated randomness to reduce ping-pong meshes
+    if (!RandomUtils::coin_flip()) {
+        return false;
+    }
+    for (int i = 0; i < 2; ++i) {
+        const int nx = x + dirs[i];
+        const int ny = y;
+        if (!curr_cells.within_bounds(nx, ny)) continue;
+        if (can_displace(curr_cells, next_cells, x, y, nx, ny)) {
+            return swap_or_move(curr_cells, next_cells, x, y, nx, ny);
+        }
+    }
+    return false;
 }
 
 bool MovementUtils::is_horizontal_path_clear(

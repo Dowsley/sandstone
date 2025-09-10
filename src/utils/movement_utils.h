@@ -133,6 +133,22 @@ public:
     );
 
     /**
+     * @brief Try single-step lateral displacement (wiggle) using density rule.
+     * @param curr_cells Current simulation buffer.
+     * @param next_cells Next simulation buffer.
+     * @param x Source X coordinate.
+     * @param y Source Y coordinate.
+     * @param dirs Two-element array with a randomized order of {-1, 1}.
+     * @return True if a lateral move/swaps happened; otherwise false.
+     */
+    static bool try_lateral_wiggle(
+        CellMatrix &curr_cells,
+        CellMatrix &next_cells,
+        int x, int y,
+        const int dirs[2]
+    );
+
+    /**
      * @brief Try diagonal movement for solids (respects density rule and path clearance).
      * @param curr_cells Current simulation buffer.
      * @param next_cells Next simulation buffer.

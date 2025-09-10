@@ -33,12 +33,25 @@ bool Liquid::step_particle_at(
         return true;
     }
 
-    // 3. Try to move sideways (slide up to max_slide)
+    // 3. Try to wiggle sideways one step based on density (helps equalize)
+    if (MovementUtils::try_lateral_wiggle(curr_cells, next_cells, x, y, dirs)) {
+        return true;
+    }
+
+    // 4. Try to move sideways (slide up to max_slide)
     if (MovementUtils::try_slide_movement(curr_cells, next_cells, x, y, 0, max_slide, dirs)) {
         return true;
     }
 
-    // 4. No move was possible
+    // 5. Buoyancy: allow lighter liquids to rise when possible
+    if (MovementUtils::try_move(curr_cells, next_cells, x, y, 0, -1)) {
+        return true;
+    }
+    if (MovementUtils::try_slide_movement(curr_cells, next_cells, x, y, -1, max_slide, dirs)) {
+        return true;
+    }
+
+    // 6. No move was possible
     next_cells.get(x, y) = curr_cells.get(x, y);
     return false;
 }

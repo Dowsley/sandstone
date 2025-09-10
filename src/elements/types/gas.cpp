@@ -37,19 +37,24 @@ bool Gas::step_particle_at(
         return true;
     }
 
-    // 3. Try to move sideways (horizontal dispersion) - gases spread out more aggressively
+    // 3. Try a small lateral wiggle (density-aware) to help mixing when blocked
+    if (MovementUtils::try_lateral_wiggle(curr_cells, next_cells, x, y, dirs)) {
+        return true;
+    }
+
+    // 4. Try to move sideways (horizontal dispersion) - gases spread out more aggressively
     if (MovementUtils::try_slide_movement(curr_cells, next_cells, x, y, 0, max_dispersion, dirs)) {
         return true;
     }
 
-    // 4. Occasionally move down (settling behavior when blocked) - 10% chance
+    // 5. Occasionally move down (settling behavior when blocked) - 10% chance
     if (movement_choice >= 90) {
         if (MovementUtils::try_move(curr_cells, next_cells, x, y, 0, 1)) {
             return true;
         }
     }
 
-    // 5. No move was possible - stay in place
+    // 6. No move was possible - stay in place
     next_cells.get(x, y) = curr_cells.get(x, y);
     return false;
 }
