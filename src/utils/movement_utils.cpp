@@ -4,6 +4,7 @@
 
 #include "movement_utils.h"
 #include "element_type_checker.h"
+ #include "../elements/element_type.h"
 
 bool MovementUtils::move_cell(
     CellMatrix &curr_cells,
@@ -26,6 +27,78 @@ bool MovementUtils::move_cell(
     return true;
 }
 
+static int density_of(const ElementType* t)
+{
+    return t ? t->get_density() : 0;
+}
+
+bool MovementUtils::can_displace(
+    const CellMatrix &curr_cells,
+    const CellMatrix &next_cells,
+    const int x, const int y,
+    const int nx, const int ny)
+{
+    if (!curr_cells.within_bounds(nx, ny)) return false;
+
+    const ElementType* src = next_cells.get_type(x, y);
+    const ElementType* dst = next_cells.get_type(nx, ny);
+    if (!src || !dst) return false;
+
+    // Immovable solid at destination: never displace
+    if (ElementTypeChecker::is_immovable_solid(*dst))
+        return false;
+
+    // Source immovable: it shouldn't be trying to move anyway
+    if (ElementTypeChecker::is_immovable_solid(*src))
+        return false;
+
+    const int dy = ny - y;
+    const int s = density_of(src);
+    const int d = density_of(dst);
+
+    if (dy > 0) { // moving down
+        return s > d;
+    }
+    if (dy < 0) { // moving up
+        return s < d;
+    }
+    
+    // lateral
+    // conservative: only displace EMPTY on lateral moves
+    return ElementTypeChecker::is_empty(*dst);
+}
+
+bool MovementUtils::swap_or_move(
+    CellMatrix &curr_cells,
+    CellMatrix &next_cells,
+    const int x, const int y,
+    const int nx, const int ny)
+{
+    if (!curr_cells.within_bounds(nx, ny)) return false;
+    if (next_cells.is_written(nx, ny)) return false;
+
+    const int dest_idx_taken = next_cells.flatten_coords(nx, ny);
+    (void)dest_idx_taken;
+
+    const ElementType* dst_type = next_cells.get_type(nx, ny);
+
+    if (ElementTypeChecker::is_empty(*dst_type)) {
+        // Simple move
+        return move_cell(curr_cells, next_cells, x, y, nx, ny);
+    }
+
+    // Swap with destination
+    const CellData src_cell = curr_cells.get(x, y);
+    const CellData dst_cell = curr_cells.get(nx, ny);
+
+    next_cells.get(nx, ny) = src_cell;
+    next_cells.get(x, y) = dst_cell;
+
+    next_cells.mark_written(nx, ny);
+    next_cells.mark_written(x, y);
+    return true;
+}
+
 bool MovementUtils::try_move(
     CellMatrix &curr_cells,
     CellMatrix &next_cells,
@@ -35,16 +108,9 @@ bool MovementUtils::try_move(
 {
     const int dest_x = x + dx * distance;
     const int dest_y = y + dy * distance;
-    
-    if (!curr_cells.within_bounds(dest_x, dest_y)) {
-        return false;
-    }
-
-    if (can_move_to(next_cells, dest_x, dest_y)) {
-        return move_cell(curr_cells, next_cells, x, y, dest_x, dest_y);
-    }
-    
-    return false;
+    if (!curr_cells.within_bounds(dest_x, dest_y)) return false;
+    if (!can_displace(curr_cells, next_cells, x, y, dest_x, dest_y)) return false;
+    return swap_or_move(curr_cells, next_cells, x, y, dest_x, dest_y);
 }
 
 bool MovementUtils::is_horizontal_path_clear(
@@ -72,23 +138,9 @@ bool MovementUtils::can_move_to(
     const bool allow_liquids)
 {
     const auto pos = Vector2I(x, y);
-    if (!next_cells.within_bounds(pos)) {
-        return false;
-    }
-
-    if (next_cells.is_written(x, y)) {
-        return false;
-    }
-
-    if (next_cells.is_empty(pos)) {
-        return true;
-    }
-    
-    if (allow_liquids && next_cells.is_liquid(pos)) {
-        return true;
-    }
-    
-    return false;
+    if (!next_cells.within_bounds(pos)) return false;
+    if (next_cells.is_written(x, y)) return false;
+    return next_cells.is_empty(pos);
 }
 
 bool MovementUtils::try_slide_movement(
@@ -112,9 +164,9 @@ bool MovementUtils::try_slide_movement(
                 continue;
             }
             
-            // Check if the destination is available
-            if (can_move_to(next_cells, nx, ny)) {
-                return move_cell(curr_cells, next_cells, x, y, nx, ny);
+            // Density-based displacement
+            if (can_displace(curr_cells, next_cells, x, y, nx, ny)) {
+                return swap_or_move(curr_cells, next_cells, x, y, nx, ny);
             }
         }
     }
@@ -130,16 +182,10 @@ bool MovementUtils::try_solid_diagonal_movement(
     for (int i = 0; i < 2; ++i) {
         const int nx = x + dirs[i];
         const int ny = y + 1;
-        if (curr_cells.within_bounds(nx, ny) && curr_cells.within_bounds(nx, y)) {
-            const ElementType* diag_type = next_cells.get_type(nx, ny);
-            const ElementType* side_type = next_cells.get_type(nx, y);
-            if (
-                diag_type && side_type &&
-                can_move_to(next_cells, nx, ny, true) &&
-                can_move_to(next_cells, nx, y, true)
-            ) {
-                return move_cell(curr_cells, next_cells, x, y, nx, ny);
-            }
+        if (!curr_cells.within_bounds(nx, ny)) continue;
+        if (!is_horizontal_path_clear(next_cells, x, y, dirs[i], 1)) continue;
+        if (can_displace(curr_cells, next_cells, x, y, nx, ny)) {
+            return swap_or_move(curr_cells, next_cells, x, y, nx, ny);
         }
     }
     return false;

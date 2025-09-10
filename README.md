@@ -37,11 +37,9 @@ cmake --build build
 - [X] Better build system/dependency handler
 - [X] Basic Input handler
 - [X] Gases
-- [ ] Properties
-  - [ ] Density
-    - While I am at it, fix the teleporting water problem.
-  - Priority?
-  - Friction (chance of moving solid sliding down)?
+- [X] Density
+- [ ] Friction
+  - (chance of moving solid sliding down)
 - [ ] Data-driven approach
   - XML loading like in live-world-engine
 - [ ] No more raw pointers (complete refactor)

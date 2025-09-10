@@ -3,7 +3,6 @@
 //
 
 #include "movable_solid.h"
-#include "../../core/cell_matrix.h"
 #include "../../utils/element_type_checker.h"
 #include "../../utils/movement_utils.h"
 
@@ -15,11 +14,9 @@ bool MovableSolid::step_particle_at(
     CellMatrix &next_cells,
     const int x, const int y, const ElementType *type) const
 {
-    // TODO: This is not sinking over gas. Fix it. Make density feature while Im at it.
-    
-    // Try to move down (can fall through liquids)
-    if (MovementUtils::can_move_to(next_cells, x, y + 1, true)) {
-        return MovementUtils::move_cell(curr_cells, next_cells, x, y, x, y + 1);
+    // Density-based: try to move down (displace or swap if heavier)
+    if (MovementUtils::try_move(curr_cells, next_cells, x, y, 0, 1)) {
+        return true;
     }
 
     // Try diagonals, but only if the side cell is also empty or water (no squeezing)
