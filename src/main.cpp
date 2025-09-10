@@ -41,11 +41,14 @@ public:
             "cycle_element",
             { InputCode::key(KEY_SPACE) });
         _input.create_action(
-            "increase_brush_size",
-            { InputCode::key(KEY_TAB) });
+            "prev_element",
+            { InputCode::key(KEY_Q) });
         _input.create_action(
-            "decrease_brush_size",
-            { InputCode::key(KEY_LEFT_SHIFT) });
+            "next_element",
+            { InputCode::key(KEY_E) });
+        _input.create_action(
+            "erase_element",
+            { InputCode::mouse(MOUSE_RIGHT_BUTTON) });
     }
 
     void run()
@@ -111,23 +114,43 @@ private:
     {
         constexpr int margin = 8;
         constexpr int font_size = 5 * RES_SCALE;
+        constexpr int pad = 1;
+
+        Vector2I pos = { margin, margin };
+
+        const std::string guide_label = "Q/E: Switch elements";
+        DrawText(guide_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(guide_label.c_str(), pos.x, pos.y, font_size, WHITE);
+
+        pos.y += font_size + pad;
+        const std::string rmb_guide = "RMB: Erase";
+        DrawText(rmb_guide.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(rmb_guide.c_str(), pos.x, pos.y, font_size, WHITE);
+
+        pos.y += font_size + pad;
+        const std::string scroll_guide = "Scroll: Brush size";
+        DrawText(scroll_guide.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(scroll_guide.c_str(), pos.x, pos.y, font_size, WHITE);
         
+        pos.y += font_size + pad*15;
         const std::string &current_type_id = _type_ids[_current_type_idx];
         const std::string type_label = "Element: " + current_type_id;
-        DrawText(type_label.c_str(), margin + 1, margin + 1, font_size, BLACK);
-        DrawText(type_label.c_str(), margin, margin, font_size, WHITE);
+        DrawText(type_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(type_label.c_str(), pos.x, pos.y, font_size, GREEN);
 
+        pos.y += font_size + pad;
         const std::string size_label = "Brush Size: " + std::to_string(_brush_size);;
-        DrawText(size_label.c_str(), margin + 1, margin + font_size + 2, font_size, BLACK);
-        DrawText(size_label.c_str(), margin, margin+font_size+1, font_size, WHITE);
+        DrawText(size_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(size_label.c_str(), pos.x, pos.y, font_size, GREEN);
     }
 
     void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
     { 
+        const auto type = _sim.get_type_by_id(type_id);
+        const bool erase = (type_id == "EMPTY");
         for (int x = pos.x - expand_brush; x < pos.x + expand_brush + 1; x++) {
             for (int y = pos.y - expand_brush; y < pos.y + expand_brush + 1; y++) {
-                if (_sim.is_pos_empty(x, y)) {
-                    const auto type = _sim.get_type_by_id(type_id);
+                if (erase || _sim.is_pos_empty(x, y)) {
                     _sim.set_type_at(x, y, type, type->get_random_color_index());
                 }
             }
@@ -137,6 +160,25 @@ private:
     static size_t get_next_type_index(const size_t current, const size_t total)
     {
         return (current + 1) % total;
+    }
+
+    static size_t get_prev_type_index(const size_t current, const size_t total)
+    {
+        return (current + total - 1) % total;
+    }
+
+    void increase_brush_size()
+    {
+        if (_brush_size == INT_MAX)
+            return;
+        _brush_size++;
+    }
+
+    void decrease_brush_size()
+    {
+        if (_brush_size == 1)
+            return;
+        _brush_size--;   
     }
 
     void handle_input()
@@ -154,18 +196,31 @@ private:
         if (_input.is_action_pressed("place_element")) {
             draw_at_pos(Vector2I(current_mouse_pos), current_type_id, _brush_size-1);
         }
+
+        // RMB eraser paints EMPTY
+        if (_input.is_action_pressed("erase_element")) {
+            draw_at_pos(Vector2I(current_mouse_pos), "EMPTY", _brush_size-1);
+        }
     
         if (_input.is_action_just_pressed("cycle_element")) {
             _current_type_idx = get_next_type_index(_current_type_idx, _type_ids.size());
         }
-        
-        if (_input.is_action_just_pressed("increase_brush_size")) {
-            _brush_size++;
+
+        // Q/E for prev/next element
+        if (_input.is_action_just_pressed("prev_element")) {
+            _current_type_idx = get_prev_type_index(_current_type_idx, _type_ids.size());
+        }
+        if (_input.is_action_just_pressed("next_element")) {
+            _current_type_idx = get_next_type_index(_current_type_idx, _type_ids.size());
         }
 
-        if (_input.is_action_just_pressed("decrease_brush_size")) {
-            if (_brush_size > 1)
-                _brush_size--;
+        // Mouse wheel adjusts brush size
+        const float wheel = _input.get_mouse_scroll_delta();
+        constexpr float tolerance = 0.01f;
+        if (wheel > tolerance) {
+            increase_brush_size();
+        } else if (wheel < -tolerance) {
+            decrease_brush_size();
         }
     }
 };

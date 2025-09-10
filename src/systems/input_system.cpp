@@ -147,5 +147,6 @@ Vector2 InputSystem::get_mouse_delta() const
 
 float InputSystem::get_mouse_scroll_delta() const
 {
-    return _current_mouse_wheel - _previous_mouse_wheel;
+    // Raylib's GetMouseWheelMove() already returns the per-frame delta.
+    return _current_mouse_wheel;
 }

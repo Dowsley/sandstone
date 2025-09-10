@@ -40,9 +40,10 @@ cmake --build build
 - [X] Density
 - [X] Basic text on UI
 - [ ] Controls expanded
-  - [ ] Q and E to switch elements
-  - [ ] Scroll wheel to switch between elements
-  - [ ] RMB as eraser
+  - [X] Q and E to switch elements
+  - [X] Scroll wheel to change brush size
+  - [X] RMB as eraser
+  - [ ] Tab to switch between brush shapes (show this mode as text on screen)
 - [ ] Friction
   - (chance of moving solid sliding down)
 - [ ] Data-driven approach
@@ -51,8 +52,8 @@ cmake --build build
 - [ ] Better water behavior
   - Dispersion rate
 - [ ] Extremely basic UI
-  - [ ] Brush size
-  - [ ] Element chooser
+  - [ ] Element chooser (from list)
+  - [ ] Brush visualization
 - [ ] Particle System
 - [ ] Rigid Body System
 - [ ] Temperatures
