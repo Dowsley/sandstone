@@ -69,6 +69,17 @@ int CellMatrix::get_color_variation_index(const int idx) const
     return _cells[idx].color_variant_index;
 }
 
+int CellMatrix::get_temp(const int x, const int y) const
+{
+    const int idx = flatten_coords(x, y);
+    return get_temp(idx);
+}
+
+int CellMatrix::get_temp(const int idx) const
+{
+    return _cells[idx].temp_c;
+}
+
 void CellMatrix::set(const int x, const int y, const CellData &cell_data)
 {
     const int idx = flatten_coords(x, y);
@@ -99,10 +110,10 @@ bool CellMatrix::is_of_kind(const int x, const int y, const ElementKind kind) co
     return ElementTypeChecker::is_of_kind(*dest_type, kind);
 }
 
-bool CellMatrix::is_of_kinds(const int x, const int y, const std::initializer_list<ElementKind> kinds) const
+bool CellMatrix::is_any_of_kinds(const int x, const int y, const std::initializer_list<ElementKind> kinds) const
 {
     const ElementType *dest_type = get_type(x, y);
-    return ElementTypeChecker::is_of_kinds(*dest_type, kinds);
+    return ElementTypeChecker::is_any_of_kinds(*dest_type, kinds);
 }
 
 bool CellMatrix::is_empty(const Vector2I &pos) const
@@ -115,9 +126,9 @@ bool CellMatrix::is_of_kind(const Vector2I &pos, const ElementKind kind) const
     return is_of_kind(pos.x, pos.y, kind);
 }
 
-bool CellMatrix::is_of_kinds(const Vector2I &pos, const std::initializer_list<ElementKind> kinds) const
+bool CellMatrix::is_any_of_kinds(const Vector2I &pos, const std::initializer_list<ElementKind> kinds) const
 {
-    return is_of_kinds(pos.x, pos.y, kinds);
+    return is_any_of_kinds(pos.x, pos.y, kinds);
 }
 
 bool CellMatrix::within_bounds(const int x, const int y) const

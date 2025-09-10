@@ -34,17 +34,19 @@ public:
     bool is_of_type(const Vector2I &pos, const std::string &type_id) const;
     int get_color_variation_index(int x, int y) const;
     int get_color_variation_index(int idx) const;
+    int get_temp(int x, int y) const;
+    int get_temp(int idx) const;
     void set(int x, int y, const CellData &cell_data);
     void set_type(int x, int y, const ElementType *type);
     void set_color_variation_index(int x, int y, uint8_t color_variant_index);
 
     bool is_empty(int x, int y) const;
     bool is_of_kind(int x, int y, ElementKind kind) const;
-    bool is_of_kinds(int x, int y, std::initializer_list<ElementKind> kinds) const;
+    bool is_any_of_kinds(int x, int y, std::initializer_list<ElementKind> kinds) const;
 
     bool is_empty(const Vector2I &pos) const;
     bool is_of_kind(const Vector2I &pos, ElementKind kind) const;
-    bool is_of_kinds(const Vector2I &pos, std::initializer_list<ElementKind> kinds) const;
+    bool is_any_of_kinds(const Vector2I &pos, std::initializer_list<ElementKind> kinds) const;
 
 
     bool within_bounds(int x, int y) const;

@@ -32,6 +32,7 @@ public:
     const ElementType* get_type_at(int x, int y) const;
     const ElementType* get_type_at(const Vector2I &pos) const;
     void fill_render_buffer(Color *dst) const;
+    void fill_temperature_buffer(Color *dst, Color cold, Color hot, int t_min = 0, int t_max = 1000) const;
 
     int get_width() const;
     int get_height() const;

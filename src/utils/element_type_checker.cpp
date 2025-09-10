@@ -15,7 +15,7 @@ bool ElementTypeChecker::is_of_kind(const ElementType &element, const ElementKin
     return element.get_kind() == kind;
 }
 
-bool ElementTypeChecker::is_of_kinds(const ElementType &element, const std::initializer_list<ElementKind> kinds) noexcept
+bool ElementTypeChecker::is_any_of_kinds(const ElementType &element, const std::initializer_list<ElementKind> kinds) noexcept
 {
     const ElementKind k = element.get_kind();
     for (const auto kk : kinds) {

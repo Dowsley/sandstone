@@ -96,6 +96,32 @@ void Simulation::fill_render_buffer(Color *dst) const
     }
 }
 
+static unsigned char lerp_uc(const unsigned char a, const unsigned char b, const float t)
+{
+    return static_cast<unsigned char>(a + (b - a) * t);
+}
+
+void Simulation::fill_temperature_buffer(Color *dst, const Color cold, const Color hot, const int t_min, const int t_max) const
+{
+    const int total = _width * _height;
+    const float span = static_cast<float>(std::max(1, t_max - t_min));
+    for (int i = 0; i < total; ++i) {
+        const ElementType *type = _cells.get_type(i);
+        if (!type || type->get_kind() == ElementKind::Empty) {
+            dst[i] = { 0, 0, 0, 255 };
+            continue;
+        }
+        const int t = _cells.get_temp(i);
+        const float tt = std::clamp((t - t_min) / span, 0.0f, 1.0f);
+        dst[i] = {
+            lerp_uc(cold.r, hot.r, tt),
+            lerp_uc(cold.g, hot.g, tt),
+            lerp_uc(cold.b, hot.b, tt),
+            255
+        };
+    }
+}
+
 int Simulation::get_width() const { return _width; }
 int Simulation::get_height() const { return _height; }
 

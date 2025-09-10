@@ -12,7 +12,7 @@ class ElementTypeChecker {
 public:
     static bool is_empty(const ElementType& element) noexcept;
     static bool is_of_kind(const ElementType& element, ElementKind kind) noexcept;
-    static bool is_of_kinds(const ElementType& element, std::initializer_list<ElementKind> kinds) noexcept;
+    static bool is_any_of_kinds(const ElementType& element, std::initializer_list<ElementKind> kinds) noexcept;
 };
 
 #endif //SANDSTONE_ELEMENT_UTIL_H

@@ -46,6 +46,8 @@ cmake --build build
   - [X] Tab to switch between brush shapes (show this mode as text on screen)
 - [X] Data-driven approach
   - XML loading like in live-world-engine
+- [ ] Temperature
+- [ ] Fire
 - [ ] Friction
   - (chance of movable_solid sliding down)
 - [ ] Extremely basic UI
@@ -53,7 +55,6 @@ cmake --build build
   - [ ] Brush visualization
 - [ ] Particle System
 - [ ] Rigid Body System
-- [ ] Temperatures
 - [ ] Lazy Squares
 - [ ] Chunking
 - [ ] Camera
