@@ -109,11 +109,12 @@ private:
             0.0f,
             WHITE
         );
+        draw_cursor_outline();
         draw_overlay();
         EndDrawing();
     }
 
-    static const std::string& brush_shape_name(BrushShape s)
+    static const std::string& brush_shape_name(const BrushShape s)
     {
         static const std::string BRUSH_NAME_SQUARE = "Square";
         static const std::string BRUSH_NAME_ROUND  = "Round";
@@ -137,7 +138,7 @@ private:
         const std::string fps_label = "FPS: " + std::to_string(fps);
         const int fps_width = MeasureText(fps_label.c_str(), font_size);
         const int fps_x = WINDOW_WIDTH - margin - fps_width;
-        const int fps_y = margin;
+        constexpr int fps_y = margin;
         DrawText(fps_label.c_str(), fps_x + 1, fps_y + 1, font_size, BLACK);
         DrawText(fps_label.c_str(), fps_x, fps_y, font_size, WHITE);
 
@@ -177,6 +178,35 @@ private:
         const std::string shape_label = std::string("Brush Shape: ") + brush_shape_name(_brush_shape);
         DrawText(shape_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
         DrawText(shape_label.c_str(), pos.x, pos.y, font_size, GREEN);
+    }
+
+    void draw_cursor_outline() const
+    {
+        const auto [x, y] = GetMousePosition();
+        const int mx = static_cast<int>(x) / RES_SCALE;
+        const int my = static_cast<int>(y) / RES_SCALE;
+        const int expand = static_cast<int>(_brush_size) - 1;
+
+        constexpr auto outline_color = GRAY;
+
+        switch (_brush_shape) {
+            case BrushShape::square: {
+                const int left = (mx - expand) * RES_SCALE;
+                const int top = (my - expand) * RES_SCALE;
+                const int w = (expand * 2 + 1) * RES_SCALE;
+                const int h = (expand * 2 + 1) * RES_SCALE;
+                DrawRectangleLines(left, top, w, h, outline_color);
+                break;
+            }
+            case BrushShape::round:
+            case BrushShape::spray: {
+                const int cx = mx * RES_SCALE + RES_SCALE / 2;
+                const int cy = my * RES_SCALE + RES_SCALE / 2;
+                const float r = (static_cast<float>(expand) + 0.5f) * RES_SCALE;
+                DrawCircleLines(cx, cy, r, outline_color);
+                break;
+            }
+        }
     }
 
     void draw_square(const Vector2I &pos, const std::string &type_id, const int half_extent)
