@@ -73,7 +73,7 @@ private:
     Simulation _sim { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, _element_registry };
     InputSystem _input;
     
-    uint _brush_size = 1;
+    uint _brush_size = 5;
     enum class BrushShape { square = 0, round = 1, spray = 2 };
     BrushShape _brush_shape = BrushShape::spray;
     std::vector<std::string> _type_ids;
@@ -139,14 +139,19 @@ private:
         DrawText(guide_label.c_str(), pos.x, pos.y, font_size, WHITE);
 
         pos.y += font_size + pad;
-        const std::string rmb_guide = "RMB: Erase";
-        DrawText(rmb_guide.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
-        DrawText(rmb_guide.c_str(), pos.x, pos.y, font_size, WHITE);
+        const std::string rmb_guide_label = "RMB: Erase";
+        DrawText(rmb_guide_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(rmb_guide_label.c_str(), pos.x, pos.y, font_size, WHITE);
 
         pos.y += font_size + pad;
-        const std::string scroll_guide = "Scroll: Brush size";
-        DrawText(scroll_guide.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
-        DrawText(scroll_guide.c_str(), pos.x, pos.y, font_size, WHITE);
+        const std::string scroll_guide_label = "Scroll: Brush size";
+        DrawText(scroll_guide_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(scroll_guide_label.c_str(), pos.x, pos.y, font_size, WHITE);
+
+        pos.y += font_size + pad;
+        const std::string brush_mode_guide_label = "Brush Mode: Tab";
+        DrawText(brush_mode_guide_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(brush_mode_guide_label.c_str(), pos.x, pos.y, font_size, WHITE);
         
         pos.y += font_size + pad+10;
         const std::string &current_type_id = _type_ids[_current_type_idx];
