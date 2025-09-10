@@ -39,11 +39,11 @@ cmake --build build
 - [X] Gases
 - [X] Density
 - [X] Basic text on UI
-- [ ] Controls expanded
+- [X] Controls expanded
   - [X] Q and E to switch elements
   - [X] Scroll wheel to change brush size
   - [X] RMB as eraser
-  - [ ] Tab to switch between brush shapes (show this mode as text on screen)
+  - [X] Tab to switch between brush shapes (show this mode as text on screen)
 - [ ] Friction
   - (chance of moving solid sliding down)
 - [ ] Data-driven approach

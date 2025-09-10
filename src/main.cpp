@@ -6,6 +6,7 @@
 
 #include "core/simulation.h"
 #include "systems/input_system.h"
+#include "utils/random_utils.h"
 
 constexpr int VIRTUAL_WIDTH  = 200;
 constexpr int VIRTUAL_HEIGHT = 150;
@@ -38,9 +39,6 @@ public:
         _input.create_action("place_element",
             { InputCode::mouse(MOUSE_LEFT_BUTTON) });
         _input.create_action(
-            "cycle_element",
-            { InputCode::key(KEY_SPACE) });
-        _input.create_action(
             "prev_element",
             { InputCode::key(KEY_Q) });
         _input.create_action(
@@ -49,6 +47,9 @@ public:
         _input.create_action(
             "erase_element",
             { InputCode::mouse(MOUSE_RIGHT_BUTTON) });
+        _input.create_action(
+            "cycle_brush_shape",
+            { InputCode::key(KEY_TAB) });
     }
 
     void run()
@@ -73,6 +74,8 @@ private:
     InputSystem _input;
     
     uint _brush_size = 1;
+    enum class BrushShape { square = 0, round = 1, spray = 2 };
+    BrushShape _brush_shape = BrushShape::spray;
     std::vector<std::string> _type_ids;
     size_t _current_type_idx = 0;
     
@@ -110,6 +113,19 @@ private:
         EndDrawing();
     }
 
+    static const std::string& brush_shape_name(BrushShape s)
+    {
+        static const std::string BRUSH_NAME_SQUARE = "Square";
+        static const std::string BRUSH_NAME_ROUND  = "Round";
+        static const std::string BRUSH_NAME_SPRAY  = "Spray";
+        switch (s) {
+            case BrushShape::square: return BRUSH_NAME_SQUARE;
+            case BrushShape::round:  return BRUSH_NAME_ROUND;
+            case BrushShape::spray:  return BRUSH_NAME_SPRAY;
+        }
+        return BRUSH_NAME_SQUARE;
+    }
+
     void draw_overlay() const
     {
         constexpr int margin = 8;
@@ -132,7 +148,7 @@ private:
         DrawText(scroll_guide.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
         DrawText(scroll_guide.c_str(), pos.x, pos.y, font_size, WHITE);
         
-        pos.y += font_size + pad*15;
+        pos.y += font_size + pad+10;
         const std::string &current_type_id = _type_ids[_current_type_idx];
         const std::string type_label = "Element: " + current_type_id;
         DrawText(type_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
@@ -142,18 +158,77 @@ private:
         const std::string size_label = "Brush Size: " + std::to_string(_brush_size);;
         DrawText(size_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
         DrawText(size_label.c_str(), pos.x, pos.y, font_size, GREEN);
+
+        pos.y += font_size + pad;
+        const std::string shape_label = std::string("Brush Shape: ") + brush_shape_name(_brush_shape);
+        DrawText(shape_label.c_str(), pos.x + 1, pos.y + 1, font_size, BLACK);
+        DrawText(shape_label.c_str(), pos.x, pos.y, font_size, GREEN);
     }
 
-    void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
-    { 
+    void draw_square(const Vector2I &pos, const std::string &type_id, const int half_extent)
+    {
         const auto type = _sim.get_type_by_id(type_id);
         const bool erase = (type_id == "EMPTY");
-        for (int x = pos.x - expand_brush; x < pos.x + expand_brush + 1; x++) {
-            for (int y = pos.y - expand_brush; y < pos.y + expand_brush + 1; y++) {
+        for (int x = pos.x - half_extent; x <= pos.x + half_extent; ++x) {
+            for (int y = pos.y - half_extent; y <= pos.y + half_extent; ++y) {
                 if (erase || _sim.is_pos_empty(x, y)) {
                     _sim.set_type_at(x, y, type, type->get_random_color_index());
                 }
             }
+        }
+    }
+
+    void draw_round(const Vector2I &pos, const std::string &type_id, const int radius)
+    {
+        const auto type = _sim.get_type_by_id(type_id);
+        const bool erase = (type_id == "EMPTY");
+        const int r2 = radius * radius;
+        for (int dx = -radius; dx <= radius; ++dx) {
+            for (int dy = -radius; dy <= radius; ++dy) {
+                if (dx*dx + dy*dy <= r2) {
+                    const int x = pos.x + dx;
+                    const int y = pos.y + dy;
+                    if (erase || _sim.is_pos_empty(x, y)) {
+                        _sim.set_type_at(x, y, type, type->get_random_color_index());
+                    }
+                }
+            }
+        }
+    }
+
+    void draw_spray(const Vector2I &pos, const std::string &type_id, const int radius)
+    {
+        const auto type = _sim.get_type_by_id(type_id);
+        const bool erase = (type_id == "EMPTY");
+        constexpr int coverage = 15; // percent
+        const int r2 = radius * radius;
+        for (int dx = -radius; dx <= radius; ++dx) {
+            for (int dy = -radius; dy <= radius; ++dy) {
+                if (dx*dx + dy*dy <= r2) {
+                    if (RandomUtils::uniform_int(0, 99) < coverage) {
+                        const int x = pos.x + dx;
+                        const int y = pos.y + dy;
+                        if (erase || _sim.is_pos_empty(x, y)) {
+                            _sim.set_type_at(x, y, type, type->get_random_color_index());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void draw_at_pos(const Vector2I &pos, const std::string& type_id, const int expand_brush = 0)
+    {
+        switch (_brush_shape) {
+            case BrushShape::square:
+                draw_square(pos, type_id, expand_brush);
+                break;
+            case BrushShape::round:
+                draw_round(pos, type_id, expand_brush);
+                break;
+            case BrushShape::spray:
+                draw_spray(pos, type_id, expand_brush);
+                break;
         }
     }
 
@@ -197,21 +272,21 @@ private:
             draw_at_pos(Vector2I(current_mouse_pos), current_type_id, _brush_size-1);
         }
 
-        // RMB eraser paints EMPTY
         if (_input.is_action_pressed("erase_element")) {
             draw_at_pos(Vector2I(current_mouse_pos), "EMPTY", _brush_size-1);
         }
-    
-        if (_input.is_action_just_pressed("cycle_element")) {
-            _current_type_idx = get_next_type_index(_current_type_idx, _type_ids.size());
-        }
 
-        // Q/E for prev/next element
         if (_input.is_action_just_pressed("prev_element")) {
             _current_type_idx = get_prev_type_index(_current_type_idx, _type_ids.size());
         }
+        
         if (_input.is_action_just_pressed("next_element")) {
             _current_type_idx = get_next_type_index(_current_type_idx, _type_ids.size());
+        }
+
+        if (_input.is_action_just_pressed("cycle_brush_shape")) {
+            const int next = (static_cast<int>(_brush_shape) + 1) % 3;
+            _brush_shape = static_cast<BrushShape>(next);
         }
 
         // Mouse wheel adjusts brush size
