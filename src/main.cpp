@@ -1,6 +1,5 @@
 #include "raylib.h"
 
-#include <cstring>
 #include <vector>
 #include <string>
 #include <memory>
@@ -64,9 +63,9 @@ public:
             handle_input();
             _sim->step();
             if (_show_temperature) {
-                constexpr Color cold { 30, 17, 45, 255 };
-                constexpr Color hot  { 244, 134, 93, 255 };
-                _sim->fill_temperature_buffer(_graphics.pixels, cold, hot, 0, 1100);
+                constexpr Color COLD { 30, 17, 45, 255 };
+                constexpr Color HOT  { 244, 134, 93, 255 };
+                _sim->fill_temperature_buffer(_graphics.pixels, COLD, HOT, 0, 1100);
             } else {
                 _sim->fill_render_buffer(_graphics.pixels);
             }

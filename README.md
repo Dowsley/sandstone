@@ -51,13 +51,14 @@ cmake --build build
 - [ ] Friction
   - (chance of movable_solid sliding down)
 - [ ] Extremely basic UI
-  - [ ] Element chooser (from list)
+  - [ ] Element chooser (from a list)
   - [ ] Brush visualization
 - [ ] Particle System
 - [ ] Rigid Body System
 - [ ] Lazy Squares
 - [ ] Chunking
 - [ ] Camera
+- [ ] Lighting
 
 ## Improvements
 - [ ] Better water behavior (dispersion rate)
